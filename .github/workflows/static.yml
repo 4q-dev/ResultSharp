@@ -3,7 +3,11 @@ name: Build and Deploy DocFX Site
 on:
   push:
     branches:
-      - main 
+      - master
+  pull_request:
+    branches:
+      - master
+  repository_dispatch:
   workflow_dispatch:
 
 permissions:
@@ -13,21 +17,25 @@ permissions:
 
 jobs:
   build:
+    name: Build to static HTML  
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.0.x'  # Указываем версию .NET (DocFX требует .NET 6+)
 
       - name: Install DocFX
         run: dotnet tool install -g docfx
 
       - name: Build Documentation
         run: docfx docs/docfx.json
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./docs/_site  # Загружаем собранный сайт
 
   deploy:
     needs: build
