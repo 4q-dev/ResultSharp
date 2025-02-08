@@ -16,8 +16,7 @@
     <a href="https://github.com/4q-dev/ResultSharp/blob/master/README_en.md"><strong>English version »</strong></a>
   </p>
 
-  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/cicd.yml?label=CI%2FCD)
-  ![GitHub Release](https://img.shields.io/github/v/release/4q-dev/ResultSharp)
+  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/tests-runner.yml?label=tests)
   ![GitHub last commit](https://img.shields.io/github/last-commit/4q-dev/ResultSharp)
   ![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)
   ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)
