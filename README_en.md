@@ -13,7 +13,7 @@
     <a href="https://resultsharp.lcma.tech"><strong>View Documentation »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/4q-dev/ResultSharp/README.md"><strong>Russian version »</strong></a>
+    <a href="https://github.com/4q-dev/ResultSharp/blob/master/README.md"><strong>Russian version »</strong></a>
   </p>
 
   ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/cicd.yml?label=CI%2FCD)
