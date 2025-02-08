@@ -16,9 +16,31 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+
+  test:    
+    name: Run tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        configuration: [Release]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run tests
+        run: dotnet test -c ${{ matrix.configuration }} {{ env.PATH_TO_TESTS }}
+
+  build_static_html:
     name: Build to static HTML  
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
@@ -37,9 +59,11 @@ jobs:
         with:
           path: ./docs/_site
 
-  deploy:
-    needs: build
+  deploy_pages:
+    needs: build_static_html
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
