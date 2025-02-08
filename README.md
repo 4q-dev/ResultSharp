@@ -22,7 +22,7 @@
   ![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)
   ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)
   ![GitHub License](https://img.shields.io/github/license/4q-dev/ResultSharp)
-  ![Static Badge](https://img.shields.io/badge/By-lcma-purple)
+  ![Static Badge](https://img.shields.io/badge/Light-chimera-purple)
 
   
   <br />
