@@ -38,7 +38,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cd src 
+          cd ${{ vars.PATH_TO_TESTS }}
           ls -a
           dotnet test -c ${{ matrix.configuration }} ${{ vars.PATH_TO_TESTS }}
 
