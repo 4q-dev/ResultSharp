@@ -17,30 +17,6 @@ permissions:
 
 jobs:
 
-  test:    
-    name: Run tests on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        configuration: [Release]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore project
-        run: dotnet restore src
-
-      - name: Run tests
-        run: |
-          cd ${{ vars.SRC_FOLDER }}
-          dotnet test -c ${{ matrix.configuration }} ${{ vars.TESTS_FOLDER }}
-
   build_static_html:
     name: Build to static HTML  
     runs-on: ubuntu-latest
