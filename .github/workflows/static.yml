@@ -24,7 +24,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'  # Указываем версию .NET (DocFX требует .NET 6+)
+          dotnet-version: '8.0.x'
 
       - name: Install DocFX
         run: dotnet tool install -g docfx
@@ -35,7 +35,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
-          path: ./docs/_site  # Загружаем собранный сайт
+          path: ./docs/_site
 
   deploy:
     needs: build
