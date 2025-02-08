@@ -1,4 +1,4 @@
-name: Test, Build docs and deploy to pages
+name: Build docs and publish to pages
 
 on:
   push:
