@@ -38,9 +38,7 @@ jobs:
 
       - name: Run tests
         run: |
-          echo pwd
-          echo ${{ env.PATH_TO_TEST }}
-          dotnet test -c ${{ matrix.configuration }} ${{ env.PATH_TO_TESTS }}
+          dotnet test -c ${{ matrix.configuration }} ${{ vars.PATH_TO_TESTS }}
 
   build_static_html:
     name: Build to static HTML  
