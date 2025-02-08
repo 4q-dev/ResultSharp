@@ -1,4 +1,4 @@
-name: Build and Deploy DocFX Site
+name: Test, Build docs and deploy to pages
 
 on:
   push:
