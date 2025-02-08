@@ -38,9 +38,8 @@ jobs:
 
       - name: Run tests
         run: |
-          cd ${{ vars.PATH_TO_TESTS }}
-          ls -a
-          dotnet test -c ${{ matrix.configuration }} ${{ vars.PATH_TO_TESTS }}
+          cd ${{ vars.SRC_FOLDER }}
+          dotnet test -c ${{ matrix.configuration }} ${{ vars.TESTS_FOLDER }}
 
   build_static_html:
     name: Build to static HTML  
