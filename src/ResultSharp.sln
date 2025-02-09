@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultSharp", "ResultSharp\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultSharp.Tests", "ResultSharp.Tests\ResultSharp.Tests.csproj", "{67439834-AEFF-4D88-88D2-200218FFCE97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultSharp.Logging.MicrosoftLogger", "ResultSharp.Logging.MicrosoftLogger\ResultSharp.Logging.MicrosoftLogger.csproj", "{080CBDDE-0B86-495F-A354-776B362C97B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultSharp.Logging.Serilog", "ResultSharp.Logging.Serilog\ResultSharp.Logging.Serilog.csproj", "{04B71314-FB85-4D8F-9DAA-C4BAEA6BBF34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{67439834-AEFF-4D88-88D2-200218FFCE97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67439834-AEFF-4D88-88D2-200218FFCE97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67439834-AEFF-4D88-88D2-200218FFCE97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{080CBDDE-0B86-495F-A354-776B362C97B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{080CBDDE-0B86-495F-A354-776B362C97B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{080CBDDE-0B86-495F-A354-776B362C97B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{080CBDDE-0B86-495F-A354-776B362C97B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04B71314-FB85-4D8F-9DAA-C4BAEA6BBF34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04B71314-FB85-4D8F-9DAA-C4BAEA6BBF34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04B71314-FB85-4D8F-9DAA-C4BAEA6BBF34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04B71314-FB85-4D8F-9DAA-C4BAEA6BBF34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

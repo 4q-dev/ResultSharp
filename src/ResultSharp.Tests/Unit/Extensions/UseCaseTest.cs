@@ -1,15 +1,15 @@
 ﻿using NUnit.Framework;
 using ResultSharp.Errors;
-using ResultSharp.Extensions;
+using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
 
-namespace ResultSharp.Tests.Extensions
+namespace ResultSharp.Tests.Unit.Extensions
 {
     [TestFixture]
     internal class UseCaseTest
     {
         private readonly Repository userRepository = new();
-        private readonly NotificationService emailNotificationService = new NotificationService(); 
+        private readonly NotificationService emailNotificationService = new NotificationService();
 
         [Test]
         public void Test()
@@ -42,8 +42,7 @@ namespace ResultSharp.Tests.Extensions
 
             var actual = userRepository.Get()
                 .Ensure(user => user.Email.IsConfirmed, onFailure: Error.Unauthorized("Email address must be confirmed before sending notifications."))
-                .Then(user => emailNotificationService.Notify(user.Email, "some notification message"))
-                .LogIfFailure();
+                .Then(user => emailNotificationService.Notify(user.Email, "some notification message"));
 
             Assert.IsTrue(actual.IsSuccess);
         }

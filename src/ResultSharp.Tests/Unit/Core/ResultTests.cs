@@ -3,7 +3,7 @@ using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 using System.Collections.ObjectModel;
 
-namespace ResultSharp.Tests
+namespace ResultSharp.Tests.Unit.Core
 {
     [TestFixture]
     public class ResultTests
@@ -155,7 +155,7 @@ namespace ResultSharp.Tests
             var error2 = new Error("Error2", ErrorCodes.Failure);
             var result = Result.Failure(error1, error2);
             var summary = result.SummaryErrorMessages();
-            var expected = "Error1" + Environment.NewLine + "Error2" + Environment.NewLine;
+            var expected = "Error1" + Environment.NewLine + "Error2";
             Assert.AreEqual(expected, summary);
         }
 
