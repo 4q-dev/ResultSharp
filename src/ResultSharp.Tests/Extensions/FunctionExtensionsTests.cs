@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
-using ResultSharp.Extensions;
+using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using System.Collections.ObjectModel;
 
 namespace ResultSharp.Tests.Extensions
