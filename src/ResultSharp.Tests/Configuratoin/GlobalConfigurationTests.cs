@@ -17,6 +17,49 @@ namespace ResultSharp.Tests.Configuratoin
         }
 
         [Test]
+        public void IsInvalid_ShouldReturnFalse_WhenLoggingDontUse()
+        {
+            var options = new ResultConfigurationOptions
+            {
+                EnableLogging = false
+            };
+
+            var result = options.IsInvalid(out var errorMessage);
+
+            Assert.IsFalse(result);
+            Assert.IsNull(errorMessage);
+        }
+
+        [Test]
+        public void IsInvalid_ShouldReturnFalse_WhenConfigurationIsValid()
+        {
+            var options = new ResultConfigurationOptions();
+            options.LoggingConfiguration.Configure((options) =>
+            {
+                options.LoggingAdapter = new Mock<ILoggingAdapter>().Object;
+            });
+
+            var result = options.IsInvalid(out var errorMessage);
+
+            Assert.IsFalse(result);
+            Assert.IsNull(errorMessage);
+        }
+
+        [Test]
+        public void IsInvalid_ShouldReturnTrue_WhenLoggingIsEnabledButLoggingConfigurationIsNotSetUp()
+        {
+            var options = new ResultConfigurationOptions
+            {
+                EnableLogging = true
+            };
+
+            var result = options.IsInvalid(out var errorMessage);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual("LoggingConfiguration configuration must be set up when logging is enabled.", errorMessage);
+        }
+
+        [Test]
         public void Configure_ShouldSetOptions_WhenCalledOnce()
         {
             var config = new ResultConfigurationGlobal();

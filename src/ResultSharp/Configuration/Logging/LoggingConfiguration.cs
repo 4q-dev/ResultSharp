@@ -14,7 +14,7 @@ namespace ResultSharp.Configuration.Logging
             lock (locker)
             {
                 if (IsConfigured)
-                    throw new InvalidOperationException("Logging configuration has already been set.");
+                    throw new InvalidOperationException("LoggingConfiguration configuration has already been set.");
 
                 var newOptions = new LoggingConfigurationOptions();
                 configure(newOptions);

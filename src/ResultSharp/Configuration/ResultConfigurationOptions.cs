@@ -10,9 +10,9 @@ namespace ResultSharp.Configuration
 
         internal bool IsInvalid([MaybeNullWhen(false)] out string errorMessage)
         {
-            if (EnableLogging && LoggingConfiguration is null)
+            if (EnableLogging && LoggingConfiguration.IsConfigured is false)
             {
-                errorMessage = "Logging configuration must be set when logging is enabled.";
+                errorMessage = "LoggingConfiguration configuration must be set up when logging is enabled.";
                 return true;
             }
 

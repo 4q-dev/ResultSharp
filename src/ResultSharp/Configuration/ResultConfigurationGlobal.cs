@@ -37,7 +37,7 @@ namespace ResultSharp.Configuration
         internal static ILoggingAdapter GetLogger()
         {
             if (!GlobalOptions.EnableLogging)
-                throw new InvalidOperationException("Logging is disabled");
+                throw new InvalidOperationException("LoggingConfiguration is disabled");
 
             return GlobalOptions.LoggingConfiguration.GetLogger();
         }
