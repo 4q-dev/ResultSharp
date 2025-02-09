@@ -3,13 +3,13 @@ using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
 
-namespace ResultSharp.Tests.Extensions
+namespace ResultSharp.Tests.Unit.Extensions
 {
     [TestFixture]
     internal class UseCaseTest
     {
         private readonly Repository userRepository = new();
-        private readonly NotificationService emailNotificationService = new NotificationService(); 
+        private readonly NotificationService emailNotificationService = new NotificationService();
 
         [Test]
         public void Test()

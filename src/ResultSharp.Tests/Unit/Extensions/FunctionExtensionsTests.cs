@@ -4,7 +4,7 @@ using ResultSharp.Errors.Enums;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using System.Collections.ObjectModel;
 
-namespace ResultSharp.Tests.Extensions
+namespace ResultSharp.Tests.Unit.Extensions
 {
     [TestFixture]
     public class FunctionExtensionsTests

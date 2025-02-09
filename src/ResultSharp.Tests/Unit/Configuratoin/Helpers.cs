@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 
-namespace ResultSharp.Tests.Configuratoin
+namespace ResultSharp.Tests.Unit.Configuratoin
 {
     internal static class Helpers
     {
-        internal static void ResetForType(Type type)
+        internal static void ResetConfiguration(Type type)
         {
             type.GetField("options", BindingFlags.NonPublic | BindingFlags.Static)!
                 .SetValue(null, null);

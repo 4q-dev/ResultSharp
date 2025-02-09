@@ -3,7 +3,7 @@ using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 using System.Collections.ObjectModel;
 
-namespace ResultSharp.Tests
+namespace ResultSharp.Tests.Unit.Core
 {
     [TestFixture]
     public class ResultTests

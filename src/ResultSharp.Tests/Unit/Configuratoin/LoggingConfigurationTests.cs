@@ -4,7 +4,7 @@ using ResultSharp.Configuration.Abstractions;
 using ResultSharp.Configuration.Logging;
 using ResultSharp.Logging.Abstractions;
 
-namespace ResultSharp.Tests.Configuratoin
+namespace ResultSharp.Tests.Unit.Configuratoin
 {
     [TestFixture]
     public class LoggingConfigurationOptionsTests
@@ -12,7 +12,7 @@ namespace ResultSharp.Tests.Configuratoin
         [SetUp]
         public void ResetStaticMembers()
         {
-            Helpers.ResetForType(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
+            Helpers.ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
         }
 
         [Test]
