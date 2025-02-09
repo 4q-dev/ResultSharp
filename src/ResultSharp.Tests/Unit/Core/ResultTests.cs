@@ -155,7 +155,7 @@ namespace ResultSharp.Tests.Unit.Core
             var error2 = new Error("Error2", ErrorCodes.Failure);
             var result = Result.Failure(error1, error2);
             var summary = result.SummaryErrorMessages();
-            var expected = "Error1" + Environment.NewLine + "Error2" + Environment.NewLine;
+            var expected = "Error1" + Environment.NewLine + "Error2";
             Assert.AreEqual(expected, summary);
         }
 

@@ -46,8 +46,9 @@ public abstract class ResultBase<TError> : IResult<TError>
     {
         var sb = new StringBuilder();
 
-        foreach (var error in Errors)
+        foreach (var error in Errors.Take(Errors.Count - 1))
             sb.AppendLine(error.Message);
+        sb.Append(Errors.Last().Message);
 
         return sb.ToString();
     }

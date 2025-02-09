@@ -15,10 +15,12 @@
     <PackageReference Include="MSTest" Version="3.6.4" />
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ResultSharp.Logging.MicrosoftLogger\ResultSharp.Logging.MicrosoftLogger.csproj" />
+    <ProjectReference Include="..\ResultSharp.Logging.Serilog\ResultSharp.Logging.Serilog.csproj" />
     <ProjectReference Include="..\ResultSharp\ResultSharp.csproj" />
   </ItemGroup>
 

@@ -1,33 +1,34 @@
-﻿using Microsoft.Extensions.Logging;
-using NUnit.Framework;
-using ResultSharp.Configuration;
-using ResultSharp.Errors;
+﻿using NUnit.Framework;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
+using ResultSharp.Configuration;
+using Serilog;
+using ResultSharp.Errors;
 using ResultSharp.Logging;
-using ResultSharp.Logging.MicrosoftLogger;
+using ResultSharp.Logging.Serilog;
 using ResultSharp.Tests.Helpers;
 
 namespace ResultSharp.Tests.Integration.Logging
 {
     [TestFixture]
-    internal class MicrosoftAdapterTests
+    internal class SerilogAdapterTests
     {
         [SetUp]
         public void SetUp()
         {
-            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            ILogger logger = factory.CreateLogger("Кумыс?");
+            var logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
 
             new ResultConfigurationGlobal().Configure(options =>
             {
-                options.LoggingConfiguration.Configure(logConfig => 
-                    logConfig.LoggingAdapter = new MicrosoftLoggingAdapter(logger)
+                options.LoggingConfiguration.Configure(logConfig =>
+                    logConfig.LoggingAdapter = new SerilogAdapter(logger)
                 );
             });
         }
 
         [TearDown]
-        public void ResetConfiguration()
+        public void ResetConfiguratoin()
         {
             ConfigurationHelpers.ResetGloabalConfiguration();
         }
@@ -35,7 +36,7 @@ namespace ResultSharp.Tests.Integration.Logging
         [Test]
         public void Test()
         {
-            Result.Success().LogInformation("Test message");
+            Result.Success().LogInformation("Serilog message");
 
             Result.Success().LogIfFailure("бим бим бам бам");
 

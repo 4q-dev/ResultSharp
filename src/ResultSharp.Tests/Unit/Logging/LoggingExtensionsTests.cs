@@ -6,7 +6,7 @@ using ResultSharp.Configuration.Logging;
 using ResultSharp.Errors;
 using ResultSharp.Logging;
 using ResultSharp.Logging.Abstractions;
-using ResultSharp.Tests.Unit.Configuratoin;
+using ResultSharp.Tests.Helpers;
 using System.Reflection;
 
 namespace ResultSharp.Tests.Unit.Logging
@@ -37,8 +37,7 @@ namespace ResultSharp.Tests.Unit.Logging
         public void Reset()
         {
             mockLogger.Reset();
-            Helpers.ResetConfiguration(typeof(ResultConfigurationGlobal));
-            Helpers.ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
+            ConfigurationHelpers.ResetGloabalConfiguration();
         }
 
         #endregion

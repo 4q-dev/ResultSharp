@@ -3,6 +3,7 @@ using NUnit.Framework;
 using ResultSharp.Configuration.Abstractions;
 using ResultSharp.Configuration.Logging;
 using ResultSharp.Logging.Abstractions;
+using ResultSharp.Tests.Helpers;
 
 namespace ResultSharp.Tests.Unit.Configuratoin
 {
@@ -12,7 +13,7 @@ namespace ResultSharp.Tests.Unit.Configuratoin
         [SetUp]
         public void ResetStaticMembers()
         {
-            Helpers.ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
+            ConfigurationHelpers.ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
         }
 
         [Test]

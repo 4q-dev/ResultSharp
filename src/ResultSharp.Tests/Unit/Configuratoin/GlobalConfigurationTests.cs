@@ -1,19 +1,17 @@
 ﻿using Moq;
 using NUnit.Framework;
 using ResultSharp.Configuration;
-using ResultSharp.Configuration.Abstractions;
-using ResultSharp.Configuration.Logging;
 using ResultSharp.Logging.Abstractions;
+using ResultSharp.Tests.Helpers;
 
 namespace ResultSharp.Tests.Unit.Configuratoin
 {
     internal class GlobalConfigurationTests
     {
-        [SetUp]
+        [TearDown]
         public void ResetStaticMembers()
         {
-            Helpers.ResetConfiguration(typeof(ResultConfigurationGlobal));
-            Helpers.ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
+            ConfigurationHelpers.ResetGloabalConfiguration();
         }
 
         [Test]
