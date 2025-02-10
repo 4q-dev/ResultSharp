@@ -62,6 +62,11 @@ jobs:
       - name: Restore project
         run: dotnet restore src
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "name@lcma.xyz"
+          git config --global user.name "Name"
+
       - name: Determine if ResultSharp.Logging.Serilog has changes
         id: serilog_changes
         run: |
@@ -102,6 +107,7 @@ jobs:
         #if: env.serilog_changed == 'true'
         run: |
           set -e
+          echo "Getting version for ResultSharp.Logging.Serilog..."
           version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj) || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
@@ -114,6 +120,7 @@ jobs:
         #if: env.microsoft_logger_changed == 'true'
         run: |
           set -e
+          echo "Getting version for ResultSharp.Logging.MicrosoftLogger..."
           version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj) || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
@@ -126,6 +133,7 @@ jobs:
         #if: env.resultsharp_changed == 'true'
         run: |
           set -e
+          echo "Getting version for ResultSharp..."
           version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj) || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
