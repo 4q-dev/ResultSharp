@@ -3,7 +3,7 @@ using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
 
-namespace ResultSharp.Tests.Unit.Extensions
+namespace ResultSharp.Tests.Integration
 {
     [TestFixture]
     internal class UseCaseTest
@@ -45,6 +45,27 @@ namespace ResultSharp.Tests.Unit.Extensions
                 .Then(user => emailNotificationService.Notify(user.Email, "some notification message"));
 
             Assert.IsTrue(actual.IsSuccess);
+        }
+
+        [Test]
+        public void Test2()
+        {
+            int result = ParseNumber("42")
+                .Map(n => n * 2)
+                .Match(
+                    ok => Console.Write($"Success: {ok}"),
+                    error => Console.Write($"Error: {error}")
+                );
+
+            Console.WriteLine(result); // 84
+            Assert.That(result, Is.EqualTo(84));
+        }
+
+        private Result<int> ParseNumber(string input)
+        {
+            return int.TryParse(input, out var number)
+                ? number
+                : Error.Failure("Invalid number");
         }
     }
 
