@@ -7,7 +7,7 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>ResultSharp</PackageId>
+		<PackageId>ResultSharp.Core</PackageId>
 		<Authors>4q-dev</Authors>
 		<Description>Библиотека Result паттерна с функциональными методами</Description>
 		<PackageTags>Result, Functional, Error Handling</PackageTags>
