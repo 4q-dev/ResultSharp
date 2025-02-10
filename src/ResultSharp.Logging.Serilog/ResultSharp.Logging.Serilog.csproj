@@ -4,11 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<Version>1.0.0</Version>
   </PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>ResultSharp.Logging.Serilog</PackageId>
+		<PackageId>4q-dev.ResultSharp.Logging.Serilog</PackageId>
 		<Authors>4q-dev</Authors>
 		<Description>Библиотека Result паттерна с функциональными методами</Description>
 		<PackageTags>Result, Functional, Error Handling, Logging, Logger, Adapter</PackageTags>
