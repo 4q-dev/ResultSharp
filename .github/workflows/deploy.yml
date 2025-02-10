@@ -54,6 +54,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for project in src/*/*.csproj; do
+            if [[ "$project" == *"Tests.csproj" ]]; then
+              continue
+            fi
             project_name=$(basename $(dirname $project))
             current_version=$(git tag --list "${project_name}-v*" --sort=-v:refname | head -n 1 | sed 's/.*-v//')
             if [ -z "$current_version" ]; then
@@ -81,5 +84,5 @@ jobs:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
           for nupkg in src/*/bin/Release/*.nupkg; do
-            dotnet nuget push "$nupkg" -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+            dotnet nuget push "$nupkg" -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           done
