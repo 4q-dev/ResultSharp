@@ -21,7 +21,6 @@ jobs:
     name: Run tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         configuration: [Release]
@@ -65,17 +64,38 @@ jobs:
       - name: Determine if ResultSharp.Logging.Serilog has changes
         id: serilog_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.Serilog/'; then echo "serilog_changed=true" >> $GITHUB_ENV; else echo "serilog_changed=false" >> $GITHUB_ENV; fi
+          if [ $(git rev-parse --is-shallow-repository) = true ]; then
+            git fetch --unshallow
+          fi
+          if [ $(git rev-list --count HEAD) -gt 1 ]; then
+            if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.Serilog/'; then echo "serilog_changed=true" >> $GITHUB_ENV; else echo "serilog_changed=false" >> $GITHUB_ENV; fi
+          else
+            echo "serilog_changed=true" >> $GITHUB_ENV
+          fi
 
       - name: Determine if ResultSharp.Logging.MicrosoftLogger has changes
         id: microsoftlogger_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.MicrosoftLogger/'; then echo "microsoft_logger_changed=true" >> $GITHUB_ENV; else echo "microsoft_logger_changed=false" >> $GITHUB_ENV; fi
+          if [ $(git rev-parse --is-shallow-repository) = true ]; then
+            git fetch --unshallow
+          fi
+          if [ $(git rev-list --count HEAD) -gt 1 ]; then
+            if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.MicrosoftLogger/'; then echo "microsoft_logger_changed=true" >> $GITHUB_ENV; else echo "microsoft_logger_changed=false" >> $GITHUB_ENV; fi
+          else
+            echo "microsoft_logger_changed=true" >> $GITHUB_ENV
+          fi
 
       - name: Determine if ResultSharp has changes
         id: resultsharp_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp/'; then echo "resultsharp_changed=true" >> $GITHUB_ENV; else echo "resultsharp_changed=false" >> $GITHUB_ENV; fi
+          if [ $(git rev-parse --is-shallow-repository) = true ]; then
+            git fetch --unshallow
+          fi
+          if [ $(git rev-list --count HEAD) -gt 1 ]; then
+            if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp/'; then echo "resultsharp_changed=true" >> $GITHUB_ENV; else echo "resultsharp_changed=false" >> $GITHUB_ENV; fi
+          else
+            echo "resultsharp_changed=true" >> $GITHUB_ENV
+          fi
 
       - name: Publish ResultSharp.Logging.Serilog if changed
         if: env.serilog_changed == 'true'
