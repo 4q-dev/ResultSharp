@@ -6,6 +6,7 @@ on:
       - master
       - dev
   pull_request:
+    types: [closed]
     branches:
       - master
       - dev
@@ -27,9 +28,9 @@ jobs:
         configuration: [Release]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
@@ -41,15 +42,22 @@ jobs:
           cd ${{ vars.SRC_FOLDER }}
           dotnet test -c ${{ matrix.configuration }} ${{ vars.TESTS_FOLDER }}
 
-  tag-and-publish:
+  bump-version:
+    if: github.event.pull_request.merged == true
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Install bump2version
+        run: pip install bump2version
 
       - name: Cache NuGet packages
         uses: actions/cache@v3
@@ -67,41 +75,64 @@ jobs:
           git config --global user.email "name@lcma.xyz"
           git config --global user.name "Name"
 
-      - name: Determine if ResultSharp.Logging.Serilog has changes
-        id: serilog_changes
+      - name: Bump version for ResultSharp.Logging.Serilog
+        if: env.serilog_changed == 'true'
         run: |
-          if [ $(git rev-parse --is-shallow-repository) = true ]; then
-            git fetch --unshallow
-          fi
-          if [ $(git rev-list --count HEAD) -gt 1 ]; then
-            if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.Serilog/'; then echo "serilog_changed=true" >> $GITHUB_ENV; else echo "serilog_changed=false" >> $GITHUB_ENV; fi
-          else
-            echo "serilog_changed=true" >> $GITHUB_ENV
-          fi
+          cd src/ResultSharp.Logging.Serilog
+          bump2version patch --allow-dirty
+          cd ../..
+          git commit -am "Bump version for ResultSharp.Logging.Serilog"
+          git tag $(grep '<Version>' src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/')
+          git push origin --tags
+          git push
 
-      - name: Determine if ResultSharp.Logging.MicrosoftLogger has changes
-        id: microsoftlogger_changes
+      - name: Bump version for ResultSharp.Logging.MicrosoftLogger
+        if: env.microsoft_logger_changed == 'true'
         run: |
-          if [ $(git rev-parse --is-shallow-repository) = true ]; then
-            git fetch --unshallow
-          fi
-          if [ $(git rev-list --count HEAD) -gt 1 ]; then
-            if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.MicrosoftLogger/'; then echo "microsoft_logger_changed=true" >> $GITHUB_ENV; else echo "microsoft_logger_changed=false" >> $GITHUB_ENV; fi
-          else
-            echo "microsoft_logger_changed=true" >> $GITHUB_ENV
-          fi
+          cd src/ResultSharp.Logging.MicrosoftLogger
+          bump2version patch --allow-dirty
+          cd ../..
+          git commit -am "Bump version for ResultSharp.Logging.MicrosoftLogger"
+          git tag $(grep '<Version>' src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/')
+          git push origin --tags
+          git push
 
-      - name: Determine if ResultSharp has changes
-        id: resultsharp_changes
+      - name: Bump version for ResultSharp
+        if: env.resultsharp_changed == 'true'
         run: |
-          if [ $(git rev-parse --is-shallow-repository) = true ]; then
-            git fetch --unshallow
-          fi
-          if [ $(git rev-list --count HEAD) -gt 1 ]; then
-            if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp/'; then echo "resultsharp_changed=true" >> $GITHUB_ENV; else echo "resultsharp_changed=false" >> $GITHUB_ENV; fi
-          else
-            echo "resultsharp_changed=true" >> $GITHUB_ENV
-          fi
+          cd src/ResultSharp
+          bump2version patch --allow-dirty
+          cd ../..
+          git commit -am "Bump version for ResultSharp"
+          git tag $(grep '<Version>' src/ResultSharp/ResultSharp.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/')
+          git push origin --tags
+          git push
+
+  publish:
+    needs: [test, bump-version]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish ResultSharp if changed
+        if: env.resultsharp_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          echo "Getting version for ResultSharp..."
+          version=$(grep '<Version>' src/ResultSharp/ResultSharp.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
+          version="v$version"
+          echo "Version: $version"
+          dotnet pack src/ResultSharp/ResultSharp.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp.Logging.Serilog if changed
         if: env.serilog_changed == 'true'
@@ -113,8 +144,6 @@ jobs:
           version=$(grep '<Version>' src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
-          git tag -a "ResultSharp.Logging.Serilog.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
-          git push origin "ResultSharp.Logging.Serilog.$version" || { echo "Failed to push tag"; exit 1; }
           dotnet pack src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
           dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
@@ -128,22 +157,5 @@ jobs:
           version=$(grep '<Version>' src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
-          git tag -a "ResultSharp.Logging.MicrosoftLogger.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
-          git push origin "ResultSharp.Logging.MicrosoftLogger.$version" || { echo "Failed to push tag"; exit 1; }
           dotnet pack src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
-
-      - name: Publish ResultSharp if changed
-        if: env.resultsharp_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          echo "Getting version for ResultSharp..."
-          version=$(grep '<Version>' src/ResultSharp/ResultSharp.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
-          version="v$version"
-          echo "Version: $version"
-          git tag -a "ResultSharp.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
-          git push origin "ResultSharp.$version" || { echo "Failed to push tag"; exit 1; }
-          dotnet pack src/ResultSharp/ResultSharp.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
           dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
