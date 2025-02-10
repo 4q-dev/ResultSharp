@@ -21,6 +21,7 @@ jobs:
     name: Run tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         configuration: [Release]
@@ -100,29 +101,35 @@ jobs:
       - name: Publish ResultSharp.Logging.Serilog if changed
         #if: env.serilog_changed == 'true'
         run: |
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj)
+          set -e
+          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj) || { echo "Failed to get version"; exit 1; }
           version="v$version"
-          git tag -a "ResultSharp.Logging.Serilog.$version" -m "Release $version"
-          git push origin "ResultSharp.Logging.Serilog.$version"
-          dotnet pack src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj -c Release -o out
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          echo "Version: $version"
+          git tag -a "ResultSharp.Logging.Serilog.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
+          git push origin "ResultSharp.Logging.Serilog.$version" || { echo "Failed to push tag"; exit 1; }
+          dotnet pack src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp.Logging.MicrosoftLogger if changed
         #if: env.microsoft_logger_changed == 'true'
         run: |
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj)
+          set -e
+          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj) || { echo "Failed to get version"; exit 1; }
           version="v$version"
-          git tag -a "ResultSharp.Logging.MicrosoftLogger.$version" -m "Release $version"
-          git push origin "ResultSharp.Logging.MicrosoftLogger.$version"
-          dotnet pack src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj -c Release -o out
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          echo "Version: $version"
+          git tag -a "ResultSharp.Logging.MicrosoftLogger.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
+          git push origin "ResultSharp.Logging.MicrosoftLogger.$version" || { echo "Failed to push tag"; exit 1; }
+          dotnet pack src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp if changed
         #if: env.resultsharp_changed == 'true'
         run: |
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj)
+          set -e
+          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj) || { echo "Failed to get version"; exit 1; }
           version="v$version"
-          git tag -a "ResultSharp.$version" -m "Release $version"
-          git push origin "ResultSharp.$version"
-          dotnet pack src/ResultSharp/ResultSharp.csproj -c Release -o out
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          echo "Version: $version"
+          git tag -a "ResultSharp.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
+          git push origin "ResultSharp.$version" || { echo "Failed to push tag"; exit 1; }
+          dotnet pack src/ResultSharp/ResultSharp.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
