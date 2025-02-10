@@ -110,7 +110,7 @@ jobs:
         run: |
           set -e
           echo "Getting version for ResultSharp.Logging.Serilog..."
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj) || { echo "Failed to get version"; exit 1; }
+          version=$(grep '<Version>' src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
           git tag -a "ResultSharp.Logging.Serilog.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
@@ -125,7 +125,7 @@ jobs:
         run: |
           set -e
           echo "Getting version for ResultSharp.Logging.MicrosoftLogger..."
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj) || { echo "Failed to get version"; exit 1; }
+          version=$(grep '<Version>' src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
           git tag -a "ResultSharp.Logging.MicrosoftLogger.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
@@ -140,7 +140,7 @@ jobs:
         run: |
           set -e
           echo "Getting version for ResultSharp..."
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj) || { echo "Failed to get version"; exit 1; }
+          version=$(grep '<Version>' src/ResultSharp/ResultSharp.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
           git tag -a "ResultSharp.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
