@@ -1,4 +1,4 @@
-name: Run tests and publish to Nuget
+name: Run tests and publish to NuGet
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         configuration: [Release]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -45,14 +45,14 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -61,6 +61,11 @@ jobs:
 
       - name: Restore project
         run: dotnet restore src
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "name@lcma.xyz"
+          git config --global user.name "Name"
 
       - name: Determine if ResultSharp.Logging.Serilog has changes
         id: serilog_changes
@@ -99,37 +104,46 @@ jobs:
           fi
 
       - name: Publish ResultSharp.Logging.Serilog if changed
-        #if: env.serilog_changed == 'true'
+        if: env.serilog_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj) || { echo "Failed to get version"; exit 1; }
+          echo "Getting version for ResultSharp.Logging.Serilog..."
+          version=$(grep '<Version>' src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
           git tag -a "ResultSharp.Logging.Serilog.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
           git push origin "ResultSharp.Logging.Serilog.$version" || { echo "Failed to push tag"; exit 1; }
           dotnet pack src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp.Logging.MicrosoftLogger if changed
-        #if: env.microsoft_logger_changed == 'true'
+        if: env.microsoft_logger_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj) || { echo "Failed to get version"; exit 1; }
+          echo "Getting version for ResultSharp.Logging.MicrosoftLogger..."
+          version=$(grep '<Version>' src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
           git tag -a "ResultSharp.Logging.MicrosoftLogger.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
           git push origin "ResultSharp.Logging.MicrosoftLogger.$version" || { echo "Failed to push tag"; exit 1; }
           dotnet pack src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp if changed
-        #if: env.resultsharp_changed == 'true'
+        if: env.resultsharp_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj) || { echo "Failed to get version"; exit 1; }
+          echo "Getting version for ResultSharp..."
+          version=$(grep '<Version>' src/ResultSharp/ResultSharp.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/') || { echo "Failed to get version"; exit 1; }
           version="v$version"
           echo "Version: $version"
           git tag -a "ResultSharp.$version" -m "Release $version" || { echo "Failed to create tag"; exit 1; }
           git push origin "ResultSharp.$version" || { echo "Failed to push tag"; exit 1; }
           dotnet pack src/ResultSharp/ResultSharp.csproj -c Release -o out || { echo "Failed to pack"; exit 1; }
-          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
