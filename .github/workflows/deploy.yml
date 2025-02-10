@@ -1,4 +1,4 @@
-name: Run tests and publish to Nuget
+name: Run tests and publish to NuGet
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         configuration: [Release]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -45,14 +45,14 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -104,7 +104,9 @@ jobs:
           fi
 
       - name: Publish ResultSharp.Logging.Serilog if changed
-        #if: env.serilog_changed == 'true'
+        if: env.serilog_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           echo "Getting version for ResultSharp.Logging.Serilog..."
@@ -117,7 +119,9 @@ jobs:
           dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp.Logging.MicrosoftLogger if changed
-        #if: env.microsoft_logger_changed == 'true'
+        if: env.microsoft_logger_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           echo "Getting version for ResultSharp.Logging.MicrosoftLogger..."
@@ -130,7 +134,9 @@ jobs:
           dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json || { echo "Failed to push NuGet package"; exit 1; }
 
       - name: Publish ResultSharp if changed
-        #if: env.resultsharp_changed == 'true'
+        if: env.resultsharp_changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           echo "Getting version for ResultSharp..."
