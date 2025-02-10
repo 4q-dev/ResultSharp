@@ -98,7 +98,7 @@ jobs:
           fi
 
       - name: Publish ResultSharp.Logging.Serilog if changed
-        if: env.serilog_changed == 'true'
+        #if: env.serilog_changed == 'true'
         run: |
           version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj)
           version="v$version"
@@ -108,7 +108,7 @@ jobs:
           dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
       - name: Publish ResultSharp.Logging.MicrosoftLogger if changed
-        if: env.microsoft_logger_changed == 'true'
+        #if: env.microsoft_logger_changed == 'true'
         run: |
           version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj)
           version="v$version"
@@ -118,7 +118,7 @@ jobs:
           dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
       - name: Publish ResultSharp if changed
-        if: env.resultsharp_changed == 'true'
+        #if: env.resultsharp_changed == 'true'
         run: |
           version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj)
           version="v$version"
