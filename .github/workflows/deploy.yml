@@ -1,4 +1,4 @@
-name: .NET CI/CD
+name: Publish packages to NuGet
 
 on:
   pull_request:
@@ -21,10 +21,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore src
+        run: dotnet restore
 
       - name: Run tests
-        run: dotnet test --no-restore src
+        run: dotnet test --no-restore
 
   version-and-publish:
     runs-on: ubuntu-latest
@@ -40,8 +40,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Increase version and tag
         id: version
+        env:
+          GH_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for project in src/*/*.csproj; do
             project_name=$(basename $(dirname $project))
@@ -64,7 +71,7 @@ jobs:
               git tag "${project_name}-v$new_version"
             fi
           done
-          git push --tags
+          git push --tags https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
 
       - name: Publish NuGet packages
         env:
