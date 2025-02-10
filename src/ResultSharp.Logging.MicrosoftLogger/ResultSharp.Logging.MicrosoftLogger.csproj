@@ -1,17 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
-  </ItemGroup>
+	<PropertyGroup>
+		<PackageId>ResultSharp.Logging.MicrosoftLogger</PackageId>
+		<Authors>4q-dev</Authors>
+		<Description>Библиотека Result паттерна с функциональными методами</Description>
+		<PackageTags>Result, Functional, Error Handling, Logging, Logger, Adapter</PackageTags>
+		<RepositoryUrl>https://github.com/4q-dev/ResultSharp</RepositoryUrl>
+		<License>MIT</License>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ResultSharp\ResultSharp.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ResultSharp\ResultSharp.csproj" />
+	</ItemGroup>
+
+	<Target Name="ShowVersion">
+		<Message Importance="high" Text="$(Version)" />
+	</Target>
 
 </Project>
