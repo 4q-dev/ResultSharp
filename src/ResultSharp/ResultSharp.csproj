@@ -1,9 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+	<PropertyGroup>
+		<PackageId>ResultSharp</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>4q-dev</Authors>
+		<Description>Библиотека Result паттерна с функциональными методами</Description>
+		<PackageTags>Result, Functional, Error Handling</PackageTags>
+		<RepositoryUrl>https://github.com/4q-dev/ResultSharp</RepositoryUrl>
+		<License>MIT</License>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 
 </Project>
