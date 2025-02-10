@@ -1,13 +1,20 @@
 ﻿using Moq;
 using NUnit.Framework;
+using ResultSharp.Configuration.Abstractions;
 using ResultSharp.Configuration.Logging;
 using ResultSharp.Logging.Abstractions;
+using ResultSharp.Tests.Helpers;
 
 namespace ResultSharp.Tests.Unit.Configuratoin
 {
     [TestFixture]
     public class LoggingConfigurationOptionsTests
     {
+        [SetUp]
+        public void ResetStaticMembers()
+        {
+            ConfigurationHelpers.ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
+        }
 
         [Test]
         public void Getter_ShouldThrowException_WhenLoggingAdapterIsNull()
@@ -88,6 +95,28 @@ namespace ResultSharp.Tests.Unit.Configuratoin
 
             Assert.Throws<InvalidOperationException>(() =>
                 config.Configure(options => options.LoggingAdapter = mockLogger.Object));
+        }
+
+        [Test]
+        public void Configure_ShouldThrowException_WhenCalledTwiceWithDifferenctConfigurationObjects()
+        {
+            var mockLogger = new Mock<ILoggingAdapter>();
+            var config1 = new LoggingConfiguration();
+            config1.Configure((options) =>
+            {
+                options.LoggingAdapter = mockLogger.Object;
+            });
+
+            Assert.That(LoggingConfiguration.IsConfigured);
+            Assert.AreEqual(config1.Options.LoggingAdapter, mockLogger.Object);
+
+            var config2 = new LoggingConfiguration();
+            Assert.Throws<InvalidOperationException>(() =>
+                config2.Configure((options) =>
+                {
+                    options.LoggingAdapter = mockLogger.Object;
+                })
+            );
         }
 
         [Test]
