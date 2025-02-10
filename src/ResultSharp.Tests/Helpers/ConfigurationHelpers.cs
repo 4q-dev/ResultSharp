@@ -19,7 +19,6 @@ namespace ResultSharp.Tests.Helpers
         internal static void ResetGloabalConfiguration()
         {
             ResetConfiguration(typeof(ResultConfigurationGlobal));
-            ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
         }
     }
 }
