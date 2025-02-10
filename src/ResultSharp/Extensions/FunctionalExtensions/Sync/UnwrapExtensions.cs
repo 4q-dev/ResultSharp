@@ -7,14 +7,14 @@
         /// </summary>  
         /// <typeparam name="TResult">The type of the result value.</typeparam>  
         /// <param name="result">The original result.</param>  
-        /// <param name="defualt">The default value to return if the result is a failure.</param>  
+        /// <param name="default">The default value to return if the result is a failure.</param>  
         /// <returns>The result value if successful, otherwise the default value.</returns>  
-        public static TResult UnwrapOrDefault<TResult>(this Result<TResult> result, TResult defualt)
+        public static TResult UnwrapOrDefault<TResult>(this Result<TResult> result, TResult @default)
         {
             if (result.IsSuccess)
                 return result;
 
-            return defualt;
+            return @default;
         }
 
         /// <summary>  
