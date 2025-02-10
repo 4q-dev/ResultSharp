@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ResultSharp.Configuration
 {
-    public record ResultConfigurationOptions
+    public sealed record ResultConfigurationOptions
     {
         public bool EnableLogging { get; set; } = true;
         public LoggingConfiguration LoggingConfiguration { get; } = new();

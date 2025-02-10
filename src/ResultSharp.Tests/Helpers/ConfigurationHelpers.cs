@@ -1,6 +1,4 @@
 ﻿using ResultSharp.Configuration;
-using ResultSharp.Configuration.Abstractions;
-using ResultSharp.Configuration.Logging;
 using System.Reflection;
 
 namespace ResultSharp.Tests.Helpers
@@ -19,7 +17,6 @@ namespace ResultSharp.Tests.Helpers
         internal static void ResetGloabalConfiguration()
         {
             ResetConfiguration(typeof(ResultConfigurationGlobal));
-            ResetConfiguration(typeof(ConfiguratoinBase<LoggingConfigurationOptions>));
         }
     }
 }

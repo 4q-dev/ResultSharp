@@ -3,7 +3,7 @@ using ResultSharp.Logging.Abstractions;
 
 namespace ResultSharp.Configuration
 {
-    public class ResultConfigurationGlobal : IConfigurable<ResultConfigurationOptions>
+    public sealed class ResultConfigurationGlobal : IConfigurable<ResultConfigurationOptions>
     {
         public static bool IsConfigured { get; private set; } = false;
         public static ResultConfigurationOptions GlobalOptions => options ?? throw new InvalidOperationException($"Global configuration has not been set.");

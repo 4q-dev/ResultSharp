@@ -7,7 +7,7 @@ namespace ResultSharp.Configuration.Logging
         ConfiguratoinBase<LoggingConfigurationOptions>,
         IConfigurable<LoggingConfigurationOptions>
     {
-        private static readonly object locker = new();      
+        private readonly object locker = new();      
 
         public void Configure(Action<LoggingConfigurationOptions> configure)
         {
