@@ -21,10 +21,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore src
 
       - name: Run tests
-        run: dotnet test --no-restore
+        run: dotnet test --no-restore src
 
   version-and-publish:
     runs-on: ubuntu-latest
