@@ -1,0 +1,88 @@
+name: .NET CI/CD
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - dev
+permissions:
+  contents: write
+  
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src
+
+      - name: Run tests
+        run: dotnet test --no-restore src
+
+  version-and-publish:
+    runs-on: ubuntu-latest
+    needs: test
+    #if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Increase version and tag
+        id: version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for project in src/*/*.csproj; do
+            if [[ "$project" == *"Tests.csproj" ]]; then
+              continue
+            fi
+            project_name=$(basename $(dirname $project))
+            current_version=$(git tag --list "${project_name}-v*" --sort=-v:refname | head -n 1 | sed 's/.*-v//')
+            if [ -z "$current_version" ]; then
+              new_version="1.0.0"
+            else
+              IFS='.' read -r major minor patch <<< "$current_version"
+              if git diff --name-only HEAD^ HEAD | grep -q $project; then
+                patch=$((patch + 1))
+                new_version="$major.$minor.$patch"
+              else
+                new_version="$current_version"
+              fi
+            fi
+
+            if [ "$new_version" != "$current_version" ]; then
+              echo "Updating $project to version $new_version"
+              dotnet pack $project -c Release /p:PackageVersion=$new_version
+              git tag "${project_name}-v$new_version"
+            fi
+          done
+          git push --tags
+
+      - name: Publish NuGet packages
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          for nupkg in src/*/bin/Release/*.nupkg; do
+            dotnet nuget push "$nupkg" -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+          done
