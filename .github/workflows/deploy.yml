@@ -28,7 +28,7 @@ jobs:
 
   version-and-publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    #if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
