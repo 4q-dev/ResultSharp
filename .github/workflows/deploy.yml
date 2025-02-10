@@ -1,0 +1,108 @@
+name: Run tests and publish to Nuget
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+  repository_dispatch:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    name: Run tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        configuration: [Release]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore project
+        run: dotnet restore src
+
+      - name: Run tests
+        run: |
+          cd ${{ vars.SRC_FOLDER }}
+          dotnet test -c ${{ matrix.configuration }} ${{ vars.TESTS_FOLDER }}
+
+  tag-and-publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore project
+        run: dotnet restore src
+
+      - name: Determine if ResultSharp.Logging.Serilog has changes
+        id: serilog_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.Serilog/'; then echo "serilog_changed=true" >> $GITHUB_ENV; else echo "serilog_changed=false" >> $GITHUB_ENV; fi
+
+      - name: Determine if ResultSharp.Logging.MicrosoftLogger has changes
+        id: microsoftlogger_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp.Logging.MicrosoftLogger/'; then echo "microsoft_logger_changed=true" >> $GITHUB_ENV; else echo "microsoft_logger_changed=false" >> $GITHUB_ENV; fi
+
+      - name: Determine if ResultSharp has changes
+        id: resultsharp_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^src/ResultSharp/'; then echo "resultsharp_changed=true" >> $GITHUB_ENV; else echo "resultsharp_changed=false" >> $GITHUB_ENV; fi
+
+      - name: Publish ResultSharp.Logging.Serilog if changed
+        if: env.serilog_changed == 'true'
+        run: |
+          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj)
+          version="v$version"
+          git tag -a "ResultSharp.Logging.Serilog.$version" -m "Release $version"
+          git push origin "ResultSharp.Logging.Serilog.$version"
+          dotnet pack src/ResultSharp.Logging.Serilog/ResultSharp.Logging.Serilog.csproj -c Release -o out
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+
+      - name: Publish ResultSharp.Logging.MicrosoftLogger if changed
+        if: env.microsoft_logger_changed == 'true'
+        run: |
+          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj)
+          version="v$version"
+          git tag -a "ResultSharp.Logging.MicrosoftLogger.$version" -m "Release $version"
+          git push origin "ResultSharp.Logging.MicrosoftLogger.$version"
+          dotnet pack src/ResultSharp.Logging.MicrosoftLogger/ResultSharp.Logging.MicrosoftLogger.csproj -c Release -o out
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+
+      - name: Publish ResultSharp if changed
+        if: env.resultsharp_changed == 'true'
+        run: |
+          version=$(dotnet msbuild /t:ShowVersion -nologo -v:q -property:TargetFramework=net8.0 src/ResultSharp/ResultSharp.csproj)
+          version="v$version"
+          git tag -a "ResultSharp.$version" -m "Release $version"
+          git push origin "ResultSharp.$version"
+          dotnet pack src/ResultSharp/ResultSharp.csproj -c Release -o out
+          dotnet nuget push "out/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
