@@ -1,11 +1,11 @@
 ﻿using NUnit.Framework;
-using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Configuration;
-using Serilog;
 using ResultSharp.Errors;
+using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
 using ResultSharp.Logging.Serilog;
 using ResultSharp.Tests.Helpers;
+using Serilog;
 
 namespace ResultSharp.Tests.Integration.Logging
 {

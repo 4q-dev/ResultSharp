@@ -52,7 +52,7 @@ namespace ResultSharp.Tests.Integration
             int result = ParseNumber("42")
                 .Map(n => n * 2)
                 .Match(
-                    ok => Console.Write($"Success: {ok}"),
+                    ok => Console.Write($"Success: {ok}"), // output: Success: 84
                     error => Console.Write($"Error: {error}")
                 )
                 .UnwrapOrDefault(@default: 0);
