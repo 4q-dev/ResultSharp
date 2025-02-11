@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
-using ResultSharp.Logging;
 
 namespace ResultSharp.Tests.Integration
 {
@@ -55,7 +54,8 @@ namespace ResultSharp.Tests.Integration
                 .Match(
                     ok => Console.Write($"Success: {ok}"),
                     error => Console.Write($"Error: {error}")
-                );
+                )
+                .UnwrapOrDefault(@default: 0);
 
             Console.WriteLine(result); // 84
             Assert.That(result, Is.EqualTo(84));
