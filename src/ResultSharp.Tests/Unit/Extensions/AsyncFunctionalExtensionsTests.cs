@@ -584,7 +584,7 @@ namespace ResultSharp.Tests.Unit.Extensions
             var resultTask = Task.FromResult(Result.Success());
 
             // Act
-            var result = await resultTask.OrElse(() => Result.Failure(Error.Failure("Alternative failure")));
+            var result = await resultTask.OrElseAsync(() => Result.Failure(Error.Failure("Alternative failure")));
 
             // Assert
             Assert.IsTrue(result.IsSuccess);
@@ -597,7 +597,7 @@ namespace ResultSharp.Tests.Unit.Extensions
             var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
 
             // Act
-            var result = await resultTask.OrElse(() => Result.Success());
+            var result = await resultTask.OrElseAsync(() => Result.Success());
 
             // Assert
             Assert.IsTrue(result.IsSuccess);
@@ -636,7 +636,7 @@ namespace ResultSharp.Tests.Unit.Extensions
             var resultTask = Task.FromResult(Result<int>.Success(10));
 
             // Act
-            var result = await resultTask.OrElse(() => Result<int>.Failure(Error.Failure("Alternative failure")));
+            var result = await resultTask.OrElseAsync(() => Result<int>.Failure(Error.Failure("Alternative failure")));
 
             // Assert
             Assert.IsTrue(result.IsSuccess);
@@ -650,7 +650,7 @@ namespace ResultSharp.Tests.Unit.Extensions
             var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
 
             // Act
-            var result = await resultTask.OrElse(() => Result<int>.Success(20));
+            var result = await resultTask.OrElseAsync(() => Result<int>.Success(20));
 
             // Assert
             Assert.IsTrue(result.IsSuccess);

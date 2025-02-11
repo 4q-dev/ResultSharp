@@ -35,7 +35,7 @@ public abstract class ResultBase<TError> : IResult<TError>
     protected ResultBase(bool isSuccess, TError[]? errors)
     {
         IsSuccess = isSuccess;
-        this.errors = errors ?? Array.Empty<TError>();
+        this.errors = errors ?? [];
     }
 
     /// <summary>

@@ -81,7 +81,9 @@ Console.WriteLine(result); // 84
 ```
 
 ## Пример использования
+
 Без использования `Result`:
+
 ```csharp
 var user = userRepository.Get();
 if (user is null)
@@ -106,7 +108,9 @@ catch (Exception ex)
     throw ex;
 }
 ```
+
 С использованием `ResultSharp`:
+
 ```csharp
 return userRepository.Get()
     .Ensure(user => user.Email.IsConfirmed, onFailure: Error.Unauthorized("Email address must be confirmed before sending notifications."))
@@ -115,7 +119,9 @@ return userRepository.Get()
 ```
 
 ## Контрибуция
+
 Мы приветствуем вклад в развитие библиотеки! Чтобы внести изменения:
+
 1. Форкните репозиторий
 2. Создайте новую ветку (`git checkout -b feature-branch`)
 3. Внесите изменения и закоммитьте их (`git commit -m 'Добавлена новая функция'`)
@@ -123,4 +129,5 @@ return userRepository.Get()
 5. Откройте Pull Request
 
 ## Лицензия
+
 Проект распространяется под лицензией MIT. См. файл [LICENSE](https://github.com/4q-dev/ResultSharp/blob/main/LICENSE) для деталей.
