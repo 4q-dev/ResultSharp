@@ -89,7 +89,7 @@ namespace ResultSharp.Tests.Unit.Extensions
         public async Task MapAsync_WhenResultIsFailure_ShouldReturnFailure()
         {
             // Arrange
-            var error = new Error("Initial failure", ErrorCodes.Failure);
+            var error = new Error("Initial failure", ErrorCode.Failure);
             var resultTask = Task.FromResult(Result<int>.Failure(error));
 
             // Act

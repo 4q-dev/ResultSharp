@@ -20,7 +20,7 @@ namespace ResultSharp.Tests.Integration.Logging
 
             new ResultConfigurationGlobal().Configure(options =>
             {
-                options.LoggingConfiguration.Configure(logConfig => 
+                options.LoggingConfiguration.Configure(logConfig =>
                     logConfig.LoggingAdapter = new MicrosoftLoggingAdapter(logger)
                 );
             });
@@ -51,6 +51,13 @@ namespace ResultSharp.Tests.Integration.Logging
                 .Ensure(v => v > 0, Error.Failure("Что вершит судьбу человечества в этом мире? Некое незримое существо или закон, подобно Длани Господней парящей над миром? По крайне мере истинно то, что человек не властен даже над своей волей."))
                 .Map(v => v + 10000)
                 .LogIfFailure();
+
+            Result<int>.Success(10)
+                .LogIfSuccess(pattern: "start: {0}")
+                .Map(x => x + 5)
+                .LogIfSuccess(pattern: "midle: {0}")
+                .Then(x => x > 10 ? Result<string>.Success("x > 10") : Result<string>.Success("x <= 10"))
+                .LogIfSuccess("result is: {result}");
         }
     }
 }

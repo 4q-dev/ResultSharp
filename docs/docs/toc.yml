@@ -1,2 +1,34 @@
-- name: Начало работы и конфигурация
-  href: getting-started.md
+- name: Начало работы
+- href: getting-started.md
+
+- name: Базовое использование
+- name: Основные концепции
+  items:
+  - name: Result Pattern
+    href: basic-concepts/index.md
+
+  - name: Объект ошибки
+    href: basic-concepts/error-obj.md
+
+  - name: Результат с возвратом
+    href: basic-concepts/result-t.md
+
+  - name: Результат без возврата
+    href: basic-concepts/result.md
+
+  - name: Базовые функци
+    href: basic-concepts/basic-functions.md
+
+- name: Продвинутое использоание
+- name: Функциональные расширения
+  items:
+  - name: Map
+    href: advanced-usage/func/map.md
+  - name: Match
+    href: advanced-usage/func/match.md
+  - name: OnSuccess и OnFailure
+    href: advanced-usage/func/oncondition.md
+  - name: OrElse
+    href: advanced-usage/func/orelse.md
+- name: Логгирование
+  href: advanced-usage/logging.md

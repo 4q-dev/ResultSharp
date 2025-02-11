@@ -23,7 +23,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void FailureResult_Should_BeFailureAndThrowOnValueAccess()
         {
-            var error = new Error("An error occurred", ErrorCodes.Failure);
+            var error = new Error("An error occurred", ErrorCode.Failure);
             var result = Result<int>.Failure(error);
 
             Assert.IsFalse(result.IsSuccess, "Result должен быть неуспешным.");
@@ -34,8 +34,8 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void FailureResult_Should_ContainMultipleErrors()
         {
-            var error1 = new Error("Error 1", ErrorCodes.Validation);
-            var error2 = new Error("Error 2", ErrorCodes.Failure);
+            var error1 = new Error("Error 1", ErrorCode.Validation);
+            var error2 = new Error("Error 2", ErrorCode.Failure);
             var result = Result<int>.Failure(error1, error2);
 
             Assert.IsFalse(result.IsSuccess, "Result должен быть неуспешным.");
@@ -47,8 +47,8 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void FailureResult_WithIEnumerable_Should_ContainErrors()
         {
-            var error1 = new Error("Error A", ErrorCodes.Failure);
-            var error2 = new Error("Error B", ErrorCodes.Failure);
+            var error1 = new Error("Error A", ErrorCode.Failure);
+            var error2 = new Error("Error B", ErrorCode.Failure);
             var errors = new List<Error> { error1, error2 };
             var result = Result<int>.Failure(errors);
 
@@ -77,8 +77,8 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void Merge_FailureResults_Should_ReturnFailureWithErrors()
         {
-            var error1 = new Error("Merge Error 1", ErrorCodes.Failure);
-            var error2 = new Error("Merge Error 2", ErrorCodes.Failure);
+            var error1 = new Error("Merge Error 1", ErrorCode.Failure);
+            var error2 = new Error("Merge Error 2", ErrorCode.Failure);
             var r1 = Result<int>.Success(100);
             var r2 = Result<int>.Failure(error1);
             var r3 = Result<int>.Failure(error2);
@@ -105,7 +105,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void Merge_Generic_Failure_Should_ReturnFailureWithErrors()
         {
-            var error = new Error("Generic error", ErrorCodes.Failure);
+            var error = new Error("Generic error", ErrorCode.Failure);
             var r1 = Result<object>.Failure(error);
             var r2 = Result<object>.Success(new object());
 
@@ -131,7 +131,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void ImplicitConversion_FromError_To_ResultT()
         {
-            Error error = new Error("Implicit error", ErrorCodes.Failure);
+            Error error = new Error("Implicit error", ErrorCode.Failure);
             Result<int> result = error;
             Assert.IsFalse(result.IsSuccess);
             Assert.AreEqual(1, result.Errors.Count);
@@ -143,8 +143,8 @@ namespace ResultSharp.Tests.Unit.Core
         {
             var errors = new List<Error>
             {
-                new Error("List error 1", ErrorCodes.Failure),
-                new Error("List error 2", ErrorCodes.Failure)
+                new Error("List error 1", ErrorCode.Failure),
+                new Error("List error 2", ErrorCode.Failure)
             };
             Result<int> result = errors;
             Assert.IsFalse(result.IsSuccess);
@@ -156,8 +156,8 @@ namespace ResultSharp.Tests.Unit.Core
         {
             var errors = new Error[]
             {
-                new Error("Array error 1", ErrorCodes.Failure),
-                new Error("Array error 2", ErrorCodes.Failure)
+                new Error("Array error 1", ErrorCode.Failure),
+                new Error("Array error 2", ErrorCode.Failure)
             };
             Result<int> result = errors;
             Assert.IsFalse(result.IsSuccess);
@@ -175,7 +175,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void ImplicitConversion_ToReadOnlyCollectionOfError_From_ResultT_Failure()
         {
-            var error = new Error("Test error", ErrorCodes.Failure);
+            var error = new Error("Test error", ErrorCode.Failure);
             var result = Result<double>.Failure(error);
             ReadOnlyCollection<Error> errors = result;
             Assert.AreEqual(1, errors.Count);
