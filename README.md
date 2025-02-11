@@ -18,6 +18,7 @@
 
   [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/deploy.yml?label=CI%2FCD)](https://github.com/4q-dev/ResultSharp/deployments)
   [![NuGet Version](https://img.shields.io/nuget/vpre/4q-dev.ResultSharp)](https://www.nuget.org/packages/4q-dev.ResultSharp/)
+  [![NuGet Downloads](https://img.shields.io/nuget/dt/4q-dev.ResultSharp)](https://www.nuget.org/packages/4q-dev.ResultSharp/)
   [![GitHub last commit](https://img.shields.io/github/last-commit/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/commit/dev)
   [![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/issues)
   [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/pulls)
