@@ -93,6 +93,12 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
-          for nupkg in src/*/bin/Release/*.nupkg; do
-            dotnet nuget push "$nupkg" -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
-          done
+          if ls src/*/bin/Release* 1> /dev/null 2>&1; then
+            echo "pushing nupkg packets..."
+            for nupkg in src/*/bin/Release/*.nupkg; do
+              dotnet nuget push "$nupkg" -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+            done
+            echo "done!"
+          else
+            echo "There are no packages to send"
+          fi
