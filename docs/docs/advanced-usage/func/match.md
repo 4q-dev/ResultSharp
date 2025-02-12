@@ -49,6 +49,3 @@ async Task ProcessResultAsync()
     );
 }
 ```
-
-> [!NOTE]
-> Все асинхронные методы библиотеки поддерживают параметр `configureAwait`, который по умолчанию равен `true`. Этот параметр влияет на `Task.ConfigureAwait(configureAwait)`.

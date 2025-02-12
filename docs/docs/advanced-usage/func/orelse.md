@@ -54,6 +54,3 @@ Result<int> GetFallbackData() => Result.Success(100);
 var result = await GetPrimaryDataAsync().OrElseAsync(GetFallbackData);
 Console.WriteLine($"Альтернативное значение: {result.Value}");
 ```
-
-> [!NOTE]
-> `OrElseAsync` поддерживает параметр `configureAwait`, который можно использовать для управления контекстом выполнения.

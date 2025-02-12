@@ -30,5 +30,13 @@
     href: advanced-usage/func/oncondition.md
   - name: OrElse
     href: advanced-usage/func/orelse.md
+  - name: Then
+    href: advanced-usage/func/then.md
+  - name: Ensure
+    href: advanced-usage/func/ensure.md
+  - name: Unwrap и UnwrapOrDefault
+    href: advanced-usage/func/unwrap.md
+  - name: AwaitResult
+    href: advanced-usage/func/await.md
 - name: Логгирование
   href: advanced-usage/logging.md
