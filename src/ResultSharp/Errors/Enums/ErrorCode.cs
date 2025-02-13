@@ -3,7 +3,7 @@
     /// <summary>  
     /// Defines error codes for various application and HTTP errors.  
     /// </summary>  
-    public enum ErrorCodes
+    public enum ErrorCode
     {
         //=============================  
         //      APPLICATION ERRORS  

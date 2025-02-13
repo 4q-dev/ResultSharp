@@ -16,15 +16,15 @@
     <a href="https://github.com/4q-dev/ResultSharp/blob/master/README.md"><strong>Russian version »</strong></a>
   </p>
 
-  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/cicd.yml?label=CI%2FCD)
-  ![GitHub Release](https://img.shields.io/github/v/release/4q-dev/ResultSharp)
-  ![GitHub last commit](https://img.shields.io/github/last-commit/4q-dev/ResultSharp)
-  ![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)
-  ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)
-  ![GitHub License](https://img.shields.io/github/license/4q-dev/ResultSharp)
-  ![Static Badge](https://img.shields.io/badge/Light-chimera-purple)
+  [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/deploy.yml?label=CI%2FCD)](https://github.com/4q-dev/ResultSharp/deployments)
+  [![NuGet Version](https://img.shields.io/nuget/vpre/4q-dev.ResultSharp)](https://www.nuget.org/packages/4q-dev.ResultSharp/)
+  [![NuGet Downloads](https://img.shields.io/nuget/dt/4q-dev.ResultSharp)](https://www.nuget.org/packages/4q-dev.ResultSharp/)
+  [![GitHub last commit](https://img.shields.io/github/last-commit/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/commit/dev)
+  [![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/pulls)
+  [![GitHub License](https://img.shields.io/github/license/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/blob/dev/LICENSE)
+  [![Static Badge](https://img.shields.io/badge/Light-Chimera-purple)](https://github.com/4q-dev/ResultSharp)
 
-  
   <br />
   <br />
   
@@ -40,13 +40,27 @@
 Full documentation is available here: [ResultSharp Docs](https://resultsharp.lcma.tech)
 
 ## Features
-- Convenient representation of successful (`Success`) and unsuccessful (`Failure`) results
-- Composition and transformation of results using functional methods (`Map`, `Then`, `Match`, etc.)
-- Eliminating the need for `try-catch` in business logic
+
+- Convenient representation of successful (`Success`) and failed (`Failure`) results  
+- Composition and transformation of results using functional methods (`Map`, `Then`, `Match`, etc.)  
+- Eliminates the need to use `try-catch` in business logic  
+- Support for asynchronous operations  
+- Support for logging: Microsoft.Extensions.Logging, Serilog, or any other custom adapter  
 
 ## Quick Start
+
+### Installation
+
+```shel
+dotnet add package 4q-dev.ResultSharp
+```
+
+### Basic usage
+
 ```csharp
 using ResultSharp;
+using ResultSharp.Errors;
+using ResultSharp.Extensions.FunctionalExtensions.Sync;
 
 Result<int> ParseNumber(string input)
 {
@@ -58,9 +72,10 @@ Result<int> ParseNumber(string input)
 int result = ParseNumber("42")
     .Map(n => n * 2)
     .Match(
-        ok => $"Success: {ok}",
-        error => $"Error: {error}"
-    );
+        ok => Console.Write($"Success: {ok}"), // output: Success: 84
+        error => Console.Write($"Error: {error}")
+    )
+    .UnwrapOrDefault(@default: 0);
 
 Console.WriteLine(result); // 84
 ```

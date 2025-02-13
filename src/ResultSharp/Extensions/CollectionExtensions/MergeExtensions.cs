@@ -1,9 +1,9 @@
-﻿namespace ResultSharp.Extensions
+﻿namespace ResultSharp.Extensions.CollectionExtensions
 {
     /// <summary>  
     /// Provides extension methods for collections of Result objects.  
     /// </summary>  
-    public static class CollectionExtensions
+    public static class MergeExtensions
     {
         /// <summary>  
         /// Merges a collection of Result objects into a single Result.  

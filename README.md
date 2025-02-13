@@ -16,14 +16,14 @@
     <a href="https://github.com/4q-dev/ResultSharp/blob/master/README_en.md"><strong>English version »</strong></a>
   </p>
 
-  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/cicd.yml?label=CI%2FCD)
-  ![GitHub Release](https://img.shields.io/github/v/release/4q-dev/ResultSharp)
-  ![GitHub last commit](https://img.shields.io/github/last-commit/4q-dev/ResultSharp)
-  ![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)
-  ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)
-  ![GitHub License](https://img.shields.io/github/license/4q-dev/ResultSharp)
-  ![Static Badge](https://img.shields.io/badge/Light-chimera-purple)
-
+  [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/4q-dev/ResultSharp/deploy.yml?label=CI%2FCD)](https://github.com/4q-dev/ResultSharp/deployments)
+  [![NuGet Version](https://img.shields.io/nuget/vpre/4q-dev.ResultSharp)](https://www.nuget.org/packages/4q-dev.ResultSharp/)
+  [![NuGet Downloads](https://img.shields.io/nuget/dt/4q-dev.ResultSharp)](https://www.nuget.org/packages/4q-dev.ResultSharp/)
+  [![GitHub last commit](https://img.shields.io/github/last-commit/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/commit/dev)
+  [![GitHub issues](https://img.shields.io/github/issues/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/pulls)
+  [![GitHub License](https://img.shields.io/github/license/4q-dev/ResultSharp)](https://github.com/4q-dev/ResultSharp/blob/dev/LICENSE)
+  [![Static Badge](https://img.shields.io/badge/Light-Chimera-purple)](https://github.com/4q-dev/ResultSharp)
   
   <br />
   <br />
@@ -37,16 +37,31 @@
 </div>
 
 ## Документация
+
 Полная документация доступна по ссылке: [ResultSharp Docs](https://resultsharp.lcma.tech)
 
 ## Возможности
+
 - Удобное представление успешных (`Success`) и неуспешных (`Failure`) результатов
 - Композиция и трансформация результатов с помощью функциональных методов (`Map`, `Then`, `Match` и др.)
 - Исключение необходимости использовать `try-catch` в бизнес-логике
+- Поддержка асинхронных операций
+- Поддержка логгирования: Microsoft.Extensions.Logging, Serilog или любой другой кастомный адаптер
 
 ## Быстрый старт
+
+### Установка
+
+```shel
+dotnet add package 4q-dev.ResultSharp
+```
+
+### Базовое использование
+
 ```csharp
 using ResultSharp;
+using ResultSharp.Errors;
+using ResultSharp.Extensions.FunctionalExtensions.Sync;
 
 Result<int> ParseNumber(string input)
 {
@@ -58,15 +73,18 @@ Result<int> ParseNumber(string input)
 int result = ParseNumber("42")
     .Map(n => n * 2)
     .Match(
-        ok => $"Success: {ok}",
-        error => $"Error: {error}"
-    );
+        ok => Console.Write($"Success: {ok}"), // output: Success: 84
+        error => Console.Write($"Error: {error}")
+    )
+    .UnwrapOrDefault(@default: 0);
 
 Console.WriteLine(result); // 84
 ```
 
 ## Пример использования
+
 Без использования `Result`:
+
 ```csharp
 var user = userRepository.Get();
 if (user is null)
@@ -91,7 +109,9 @@ catch (Exception ex)
     throw ex;
 }
 ```
+
 С использованием `ResultSharp`:
+
 ```csharp
 return userRepository.Get()
     .Ensure(user => user.Email.IsConfirmed, onFailure: Error.Unauthorized("Email address must be confirmed before sending notifications."))
@@ -100,7 +120,9 @@ return userRepository.Get()
 ```
 
 ## Контрибуция
+
 Мы приветствуем вклад в развитие библиотеки! Чтобы внести изменения:
+
 1. Форкните репозиторий
 2. Создайте новую ветку (`git checkout -b feature-branch`)
 3. Внесите изменения и закоммитьте их (`git commit -m 'Добавлена новая функция'`)
@@ -108,4 +130,5 @@ return userRepository.Get()
 5. Откройте Pull Request
 
 ## Лицензия
+
 Проект распространяется под лицензией MIT. См. файл [LICENSE](https://github.com/4q-dev/ResultSharp/blob/main/LICENSE) для деталей.

@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -6,14 +7,22 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>4q-dev.ResultSharp</PackageId>
+		<PackageId>4q-dev.ResultSharp.Logging.Serilog</PackageId>
 		<Authors>4q-dev</Authors>
 		<Description>Библиотека Result паттерна с функциональными методами</Description>
-		<PackageTags>Result, Functional, Error Handling</PackageTags>
+		<PackageTags>Result, Functional, Error Handling, Logging, Logger, Adapter</PackageTags>
 		<RepositoryUrl>https://github.com/4q-dev/ResultSharp</RepositoryUrl>
 		<License>MIT</License>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ResultSharp\ResultSharp.csproj" />
+  </ItemGroup>
 
 	<Target Name="ShowVersion">
 		<Message Importance="high" Text="$(Version)" />

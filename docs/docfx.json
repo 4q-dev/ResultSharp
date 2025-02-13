@@ -10,7 +10,7 @@
           ]
         }
       ],
-      "dest": "api",
+    "dest": "api",
 	  "filter": "filter.yaml"
     }
   ],
@@ -38,10 +38,10 @@
       "modern"
     ],
     "globalMetadata": {
-      "_appName": "ResultSharp docs",
-      "_appTitle": "ResultSharp docs",
+      "_appName": "ResultSharp",
+      "_appTitle": "ResultSharp",
       "_enableSearch": true,
-      "pdf": true
+      "pdf": false
     }
   }
 }
