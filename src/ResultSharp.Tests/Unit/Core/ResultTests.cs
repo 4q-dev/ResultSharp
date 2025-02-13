@@ -21,7 +21,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void Failure_WithParams_ShouldReturnFailureResultWithErrors()
         {
-            var error = new Error("Ошибка", ErrorCodes.Failure);
+            var error = new Error("Ошибка", ErrorCode.Failure);
 
             var result = Result.Failure(error);
 
@@ -35,8 +35,8 @@ namespace ResultSharp.Tests.Unit.Core
         {
             var errors = new List<Error>
             {
-                new Error("Ошибка 1", ErrorCodes.Failure),
-                new Error("Ошибка 2", ErrorCodes.Failure)
+                new Error("Ошибка 1", ErrorCode.Failure),
+                new Error("Ошибка 2", ErrorCode.Failure)
             };
 
             var result = Result.Failure(errors);
@@ -65,8 +65,8 @@ namespace ResultSharp.Tests.Unit.Core
         public void Merge_AtLeastOneFailure_ShouldReturnFailureResultWithAggregatedErrors()
         {
             var successResult = Result.Success();
-            var error1 = new Error("Ошибка A", ErrorCodes.Failure);
-            var error2 = new Error("Ошибка B", ErrorCodes.Failure);
+            var error1 = new Error("Ошибка A", ErrorCode.Failure);
+            var error2 = new Error("Ошибка B", ErrorCode.Failure);
             var failureResult1 = Result.Failure(error1);
             var failureResult2 = Result.Failure(error2);
 
@@ -85,7 +85,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void ImplicitConversion_FromError_ShouldReturnFailureResult()
         {
-            var error = new Error("Implicit error", ErrorCodes.Failure);
+            var error = new Error("Implicit error", ErrorCode.Failure);
 
             Result result = error; // implicit conversion
 
@@ -99,8 +99,8 @@ namespace ResultSharp.Tests.Unit.Core
         {
             var errors = new List<Error>
             {
-                new Error("List error 1", ErrorCodes.Failure),
-                new Error("List error 2", ErrorCodes.Failure)
+                new Error("List error 1", ErrorCode.Failure),
+                new Error("List error 2", ErrorCode.Failure)
             };
 
             Result result = errors; // implicit conversion
@@ -114,8 +114,8 @@ namespace ResultSharp.Tests.Unit.Core
         {
             var errors = new Error[]
             {
-                new Error("Array error 1", ErrorCodes.Failure),
-                new Error("Array error 2", ErrorCodes.Failure)
+                new Error("Array error 1", ErrorCode.Failure),
+                new Error("Array error 2", ErrorCode.Failure)
             };
 
             Result result = errors; // implicit conversion
@@ -127,7 +127,7 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void ImplicitConversion_ToReadOnlyCollectionOfError_ShouldReturnErrorCollection()
         {
-            var error = new Error("Conversion error", ErrorCodes.Failure);
+            var error = new Error("Conversion error", ErrorCode.Failure);
             var result = Result.Failure(error);
 
             ReadOnlyCollection<Error> errors = result; // implicit conversion
@@ -151,8 +151,8 @@ namespace ResultSharp.Tests.Unit.Core
         [Test]
         public void SummaryErrorMessages_ReturnsConcatenatedMessages_WhenErrorsExist()
         {
-            var error1 = new Error("Error1", ErrorCodes.Failure);
-            var error2 = new Error("Error2", ErrorCodes.Failure);
+            var error1 = new Error("Error1", ErrorCode.Failure);
+            var error2 = new Error("Error2", ErrorCode.Failure);
             var result = Result.Failure(error1, error2);
             var summary = result.SummaryErrorMessages();
             var expected = "Error1" + Environment.NewLine + "Error2";

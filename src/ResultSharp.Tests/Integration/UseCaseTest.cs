@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
-using ResultSharp.Logging;
 
 namespace ResultSharp.Tests.Integration
 {
@@ -53,9 +52,10 @@ namespace ResultSharp.Tests.Integration
             int result = ParseNumber("42")
                 .Map(n => n * 2)
                 .Match(
-                    ok => Console.Write($"Success: {ok}"),
+                    ok => Console.Write($"Success: {ok}"), // output: Success: 84
                     error => Console.Write($"Error: {error}")
-                );
+                )
+                .UnwrapOrDefault(@default: 0);
 
             Console.WriteLine(result); // 84
             Assert.That(result, Is.EqualTo(84));

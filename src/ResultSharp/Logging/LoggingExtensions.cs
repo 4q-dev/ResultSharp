@@ -8,7 +8,7 @@ namespace ResultSharp.Logging
     /// </summary>
     public static class LoggingExtensions
     {
-        private static ILoggingAdapter logger = ResultConfigurationGlobal.GetLogger();
+        private static ILoggingAdapter logger => ResultConfigurationGlobal.GetLogger();
 
         /// <summary>
         /// Logs the result with a trace level message.

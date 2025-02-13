@@ -1,8 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
 using ResultSharp.Configuration;
-using ResultSharp.Configuration.Abstractions;
-using ResultSharp.Configuration.Logging;
 using ResultSharp.Errors;
 using ResultSharp.Logging;
 using ResultSharp.Logging.Abstractions;
@@ -27,10 +25,6 @@ namespace ResultSharp.Tests.Unit.Logging
             {
                 options.LoggingConfiguration.Configure((logConfig) => logConfig.LoggingAdapter = mockLogger.Object);
             });
-
-            typeof(LoggingExtensions)
-                .GetField("logger", BindingFlags.NonPublic | BindingFlags.Static)!
-                .SetValue(null, mockLogger.Object);
         }
 
         [TearDown]
@@ -38,6 +32,25 @@ namespace ResultSharp.Tests.Unit.Logging
         {
             mockLogger.Reset();
             ConfigurationHelpers.ResetGloabalConfiguration();
+        }
+
+        #endregion
+
+        #region Configuration Test
+
+        [Test]
+        public void TryCallLogMethod_WhenLoggingIsDisable_ShouldThrownException()
+        {
+            ConfigurationHelpers.ResetGloabalConfiguration();
+
+            new ResultConfigurationGlobal().Configure(options =>
+            {
+                options.EnableLogging = false;
+            });
+
+            Assert.Throws<InvalidOperationException>(() =>
+                Result.Success().LogCritical("shoule throw exception")
+            );
         }
 
         #endregion

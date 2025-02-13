@@ -3,10 +3,29 @@ using Serilog;
 
 namespace ResultSharp.Logging.Serilog
 {
-    public class SerilogAdapter(ILogger logger) : ILoggingAdapter
+    /// <summary>
+    /// Adapts the Serilog ILogger to the ILoggingAdapter interface.
+    /// </summary>
+    public class SerilogAdapter : ILoggingAdapter
     {
-        private readonly ILogger logger = logger;
+        private readonly ILogger logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerilogAdapter"/> class.
+        /// </summary>
+        /// <param name="logger">The Serilog logger to adapt.</param>
+        public SerilogAdapter(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
+        /// <summary>
+        /// Logs the specified message with the given log level and context.
+        /// </summary>
+        /// <param name="message">The log message.</param>
+        /// <param name="logLevel">The log level.</param>
+        /// <param name="context">The context in which the log is being made.</param>
+        /// <param name="args">Optional arguments for the log message.</param>
         public void Log(string message, LogLevel logLevel, string context, params object?[] args)
         {
             logger.ForContext("Context", context)
