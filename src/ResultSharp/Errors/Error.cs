@@ -36,6 +36,14 @@ namespace ResultSharp.Errors
         public static Error Failure(string message = "Operation failure.")
             => new(message);
 
+        /// <summary>
+        /// Creates a validation error with the specified message.
+        /// </summary>
+        /// <param name="message">The error message. Default is "Validation error."</param>
+        /// <returns>A new instance of the <see cref="Error"/></returns>
+        public static Error Validation(string message = "Validation error.")
+            => new(message, ErrorCode.Validation);
+
         /// <summary>  
         /// Creates a not found error with the specified message.  
         /// </summary>  

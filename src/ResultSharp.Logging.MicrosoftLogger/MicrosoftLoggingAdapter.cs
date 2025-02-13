@@ -29,7 +29,9 @@ namespace ResultSharp.Logging.MicrosoftLogger
         public void Log(string message, LogLevel logLevel, string context, params object?[] args)
         {
             using (logger.BeginScope(context))
+            {
                 logger.Log(ConvertLogLevel(logLevel), message, args);
+            }
         }
 
         /// <summary>  
