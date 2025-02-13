@@ -13,7 +13,7 @@ permissions:
 concurrency:
   group: nuget-publish-${{ github.ref }}
   cancel-in-progress: true
-  
+   
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.cs') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
