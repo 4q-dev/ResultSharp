@@ -4,7 +4,7 @@ using ResultSharp.Logging.Abstractions;
 namespace ResultSharp.Configuration
 {
     /// <summary>  
-    /// Provides global configuration for result handling.  
+    /// Provides global configuration for result handling.
     /// </summary>  
     public sealed class ResultConfigurationGlobal : IConfigurable<ResultConfigurationOptions>
     {

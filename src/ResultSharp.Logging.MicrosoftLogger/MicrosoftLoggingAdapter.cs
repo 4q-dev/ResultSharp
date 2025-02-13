@@ -4,7 +4,7 @@ using ResultSharp.Logging.Abstractions;
 namespace ResultSharp.Logging.MicrosoftLogger
 {
     /// <summary>  
-    /// Adapts the Microsoft.Extensions.Logging.ILogger to the ILoggingAdapter interface.  
+    /// Adapts the Microsoft Logger to the ILoggingAdapter interface.  
     /// </summary>  
     public class MicrosoftLoggingAdapter : ILoggingAdapter
     {

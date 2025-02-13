@@ -4,7 +4,7 @@ using Serilog;
 namespace ResultSharp.Logging.Serilog
 {
     /// <summary>
-    /// Adapts the Serilog ILogger to the ILoggingAdapter interface.
+    /// Adapts the Serilog Logger to the ILoggingAdapter interface.
     /// </summary>
     public class SerilogAdapter : ILoggingAdapter
     {
