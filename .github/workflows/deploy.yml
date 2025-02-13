@@ -73,7 +73,7 @@ jobs:
               new_version="1.0.0"
             else
               IFS='.' read -r major minor patch <<< "$current_version"
-              if git diff --name-only HEAD^ HEAD | grep -q $project; then
+              if git diff --name-only HEAD^ HEAD | grep -q "src/${project_name}/"; then
                 patch=$((patch + 1))
                 new_version="$major.$minor.$patch"
               else
