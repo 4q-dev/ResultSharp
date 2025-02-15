@@ -39,18 +39,15 @@ namespace ResultSharp.Tests.Unit.Logging
         #region Configuration Test
 
         [Test]
-        public void TryCallLogMethod_WhenLoggingIsDisable_ShouldThrownException()
+        public void TryCallLogMethod_WhenLoggingIsDisable_ShouldIgnore()
         {
             ConfigurationHelpers.ResetGloabalConfiguration();
-
             new ResultConfigurationGlobal().Configure(options =>
             {
                 options.EnableLogging = false;
             });
 
-            Assert.Throws<InvalidOperationException>(() =>
-                Result.Success().LogCritical("shoule throw exception")
-            );
+            mockLogger.Verify(logger => logger.Log(It.IsAny<string>(), It.IsAny<LogLevel>(), It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
         }
 
         #endregion

@@ -10,6 +10,12 @@ namespace ResultSharp.Logging
     {
         private static ILoggingAdapter logger => ResultConfigurationGlobal.GetLogger();
 
+        private static void Log(string message, LogLevel logLevel, string context, params object?[] args)
+        {
+            if (ResultConfigurationGlobal.GlobalOptions.EnableLogging)
+                logger.Log(message, logLevel, context, args);
+        }
+
         /// <summary>
         /// Logs the result with a trace level message.
         /// </summary>
@@ -20,7 +26,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result LogTrace(this Result result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Trace, context, args);
+            Log(message, LogLevel.Trace, context, args);
             return result;
         }
 
@@ -34,7 +40,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result LogDebug(this Result result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Debug, context, args);
+            Log(message, LogLevel.Debug, context, args);
             return result;
         }
 
@@ -48,7 +54,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result LogInformation(this Result result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Information, context, args);
+            Log(message, LogLevel.Information, context, args);
             return result;
         }
 
@@ -62,7 +68,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result LogWarning(this Result result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Warning, context, args);
+            Log(message, LogLevel.Warning, context, args);
             return result;
         }
 
@@ -76,7 +82,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result LogError(this Result result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Error, context, args);
+            Log(message, LogLevel.Error, context, args);
             return result;
         }
 
@@ -90,7 +96,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result LogCritical(this Result result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Critical, context, args);
+            Log(message, LogLevel.Critical, context, args);
             return result;
         }
 
@@ -106,7 +112,7 @@ namespace ResultSharp.Logging
         public static Result LogIfSuccess(this Result result, string message = "Operation success", string context = "ResultLogger", LogLevel logLevel = LogLevel.Information, params object?[] args)
         {
             if (result.IsSuccess)
-                logger.Log(message, logLevel, context, args);
+                Log(message, logLevel, context, args);
             return result;
         }
 
@@ -122,7 +128,7 @@ namespace ResultSharp.Logging
         public static Result LogIfFailure(this Result result, string message, string context = "ResultLogger", LogLevel logLevel = LogLevel.Error, params object?[] args)
         {
             if (result.IsFailure)
-                logger.Log(message, logLevel, context, logLevel, args);
+                Log(message, logLevel, context, logLevel, args);
             return result;
         }
 
@@ -138,7 +144,7 @@ namespace ResultSharp.Logging
             if (result.IsFailure)
             {
                 var errorMessage = result.SummaryErrorMessages();
-                logger.Log(errorMessage, logLevel, context);
+                Log(errorMessage, logLevel, context);
             }
 
             return result;
@@ -155,7 +161,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result<TResult> LogTrace<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Trace, context, args);
+            Log(message, LogLevel.Trace, context, args);
             return result;
         }
 
@@ -170,7 +176,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result<TResult> LogDebug<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Debug, context, args);
+            Log(message, LogLevel.Debug, context, args);
             return result;
         }
 
@@ -185,7 +191,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result<TResult> LogInformation<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Information, context, args);
+            Log(message, LogLevel.Information, context, args);
             return result;
         }
 
@@ -200,7 +206,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result<TResult> LogWarning<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Warning, context, args);
+            Log(message, LogLevel.Warning, context, args);
             return result;
         }
 
@@ -215,7 +221,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result<TResult> LogError<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Error, context, args);
+            Log(message, LogLevel.Error, context, args);
             return result;
         }
 
@@ -230,7 +236,7 @@ namespace ResultSharp.Logging
         /// <returns>The logged result.</returns>
         public static Result<TResult> LogCritical<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", params object?[] args)
         {
-            logger.Log(message, LogLevel.Critical, context, args);
+            Log(message, LogLevel.Critical, context, args);
             return result;
         }
 
@@ -247,7 +253,7 @@ namespace ResultSharp.Logging
         public static Result<TResult> LogIfSuccess<TResult>(this Result<TResult> result, string message = "Operation success", string context = "ResultLogger", LogLevel logLevel = LogLevel.Information, params object?[] args)
         {
             if (result.IsSuccess)
-                logger.Log(message, logLevel, context, args);
+                Log(message, logLevel, context, args);
             return result;
         }
 
@@ -263,7 +269,7 @@ namespace ResultSharp.Logging
         public static Result<TResult> LogIfSuccess<TResult>(this Result<TResult> result, string pattern = "{value}", string context = "ResultLogger", LogLevel logLevel = LogLevel.Information)
         {
             if (result.IsSuccess)
-                logger.Log(pattern, logLevel, context, result.Value);
+                Log(pattern, logLevel, context, result.Value);
             return result;
         }
 
@@ -280,7 +286,7 @@ namespace ResultSharp.Logging
         public static Result<TResult> LogIfFailure<TResult>(this Result<TResult> result, string message, string context = "ResultLogger", LogLevel logLevel = LogLevel.Error, params object?[] args)
         {
             if (result.IsFailure)
-                logger.Log(message, logLevel, context, logLevel, args);
+                Log(message, logLevel, context, logLevel, args);
             return result;
         }
 
@@ -297,7 +303,7 @@ namespace ResultSharp.Logging
             if (result.IsFailure)
             {
                 var errorMessage = result.SummaryErrorMessages();
-                logger.Log(errorMessage, logLevel, context);
+                Log(errorMessage, logLevel, context);
             }
 
             return result;
