@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ResultSharp.Astractions;
+namespace ResultSharp.Abstractions;
 
 /// <summary>
 /// Represents the base class for result objects, containing success status and errors if any.

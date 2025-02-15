@@ -1,4 +1,4 @@
-﻿namespace ResultSharp.Astractions
+﻿namespace ResultSharp.Abstractions
 {
     /// <summary>  
     /// Represents an error with a message.  

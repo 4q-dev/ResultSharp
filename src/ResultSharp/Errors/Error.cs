@@ -1,4 +1,4 @@
-﻿using ResultSharp.Astractions;
+﻿using ResultSharp.Abstractions;
 using ResultSharp.Errors.Enums;
 namespace ResultSharp.Errors
 {

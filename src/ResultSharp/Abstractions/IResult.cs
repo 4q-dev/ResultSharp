@@ -1,4 +1,4 @@
-﻿namespace ResultSharp.Astractions
+﻿namespace ResultSharp.Abstractions
 {
     /// <summary>
     /// Represents the result of an operation, containing success status and errors if any.
