@@ -1,6 +1,4 @@
 ﻿using ResultSharp.Configuration;
-using ResultSharp.Configuration.Abstractions;
-using ResultSharp.Configuration.Logging;
 using System.Reflection;
 
 namespace ResultSharp.Tests.Helpers

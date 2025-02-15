@@ -19,7 +19,7 @@ namespace ResultSharp.Configuration
         /// <exception cref="InvalidOperationException">Thrown when the global configuration has not been set.</exception>  
         public static ResultConfigurationOptions GlobalOptions => options ?? throw new InvalidOperationException($"Global configuration has not been set.");
 
-        private static ResultConfigurationOptions? options;
+        private static ResultConfigurationOptions? options = new();
         private static readonly object locker = new();
 
         /// <summary>  
