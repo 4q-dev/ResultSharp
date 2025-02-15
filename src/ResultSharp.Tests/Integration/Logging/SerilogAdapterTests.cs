@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using ResultSharp.Configuration;
+using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
@@ -43,15 +44,15 @@ namespace ResultSharp.Tests.Integration.Logging
             Result<int>.Success(10).LogIfSuccess("value {0}");
 
             Result.Failure(Error.Failure("some failure message"), Error.NotFound("not found message"))
-                .LogIfFailure();
+                .LogErrorMessages();
 
             Result.Failure(Error.Failure("some failure message"))
-                .LogIfFailure();
+                .LogErrorMessages();
 
             Result<int>.Success(-1)
                 .Ensure(v => v > 0, Error.Failure("Что вершит судьбу человечества в этом мире? Некое незримое существо или закон, подобно Длани Господней парящей над миром? По крайне мере истинно то, что человек не властен даже над своей волей."))
                 .Map(v => v + 10000)
-                .LogIfFailure();
+                .LogErrorMessages();
         }
     }
 }

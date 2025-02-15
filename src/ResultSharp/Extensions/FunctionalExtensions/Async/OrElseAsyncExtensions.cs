@@ -1,4 +1,6 @@
-﻿namespace ResultSharp.Extensions.FunctionalExtensions.Async
+﻿using ResultSharp.Core;
+
+namespace ResultSharp.Extensions.FunctionalExtensions.Async
 {
     /// <summary>  
     /// Provides asynchronous extension methods for handling alternative results.  

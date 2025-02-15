@@ -47,39 +47,6 @@ namespace ResultSharp.Tests.Unit.Core
 
         #endregion
 
-        #region Merge
-
-        [Test]
-        public void Merge_AllSuccessResults_ShouldReturnSuccessfulResult()
-        {
-            var r1 = Result.Success();
-            var r2 = Result.Success();
-            var r3 = Result.Success();
-
-            var merged = Result.Merge(r1, r2, r3);
-
-            Assert.IsTrue(merged.IsSuccess, "Объединённый результат должен быть успешным, если все результаты успешны.");
-        }
-
-        [Test]
-        public void Merge_AtLeastOneFailure_ShouldReturnFailureResultWithAggregatedErrors()
-        {
-            var successResult = Result.Success();
-            var error1 = new Error("Ошибка A", ErrorCode.Failure);
-            var error2 = new Error("Ошибка B", ErrorCode.Failure);
-            var failureResult1 = Result.Failure(error1);
-            var failureResult2 = Result.Failure(error2);
-
-            var merged = Result.Merge(successResult, failureResult1, failureResult2);
-
-            Assert.IsFalse(merged.IsSuccess, "Если хотя бы один результат неуспешный, итоговый результат должен быть Failure.");
-            Assert.AreEqual(2, merged.Errors.Count, "Количество агрегированных ошибок должно быть равно 2.");
-            Assert.That(merged.Errors.Any(e => e.Message.Contains("Ошибка A")));
-            Assert.That(merged.Errors.Any(e => e.Message.Contains("Ошибка B")));
-        }
-
-        #endregion
-
         #region Implicit Conversions
 
         [Test]

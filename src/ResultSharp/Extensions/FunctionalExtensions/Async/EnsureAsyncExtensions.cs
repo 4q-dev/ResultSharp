@@ -1,4 +1,5 @@
-﻿using ResultSharp.Errors;
+﻿using ResultSharp.Core;
+using ResultSharp.Errors;
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Async
 {

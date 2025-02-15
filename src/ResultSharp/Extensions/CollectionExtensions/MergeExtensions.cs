@@ -1,4 +1,6 @@
-﻿namespace ResultSharp.Extensions.CollectionExtensions
+﻿using ResultSharp.Core;
+
+namespace ResultSharp.Extensions.CollectionExtensions
 {
     /// <summary>  
     /// Provides extension methods for collections of Result objects.  
