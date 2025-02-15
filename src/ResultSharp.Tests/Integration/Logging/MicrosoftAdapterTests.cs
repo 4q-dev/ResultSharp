@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using ResultSharp.Configuration;
+using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
@@ -35,7 +36,7 @@ namespace ResultSharp.Tests.Integration.Logging
         [Test]
         public void Test()
         {
-            Result.Success().LogInformation("Test message {pattern} - {lol}", "ResultLogger", 0, 1212.11);
+            Result.Success().LogInformation("Test message {message} - {lol}", "ResultLogger", 0, 1212.11);
             Result.Failure().LogTrace("Operation executed. {arg1}, {arg2}", "message context", 11, false);
 
             Result.Success().LogIfFailure("бим бим бам бам");
@@ -45,20 +46,20 @@ namespace ResultSharp.Tests.Integration.Logging
             Result<int>.Success(10).LogIfSuccess("value");
 
             Result.Failure(Error.Failure("some failure message"), Error.NotFound("not found message"))
-                .LogIfFailure();
+                .LogErrorMessages();
 
             Result.Failure(Error.Failure("some failure message"))
-                .LogIfFailure();
+                .LogErrorMessages();
 
             Result<int>.Success(-1)
                 .Ensure(v => v > 0, Error.Failure("Что вершит судьбу человечества в этом мире? Некое незримое существо или закон, подобно Длани Господней парящей над миром? По крайне мере истинно то, что человек не властен даже над своей волей."))
                 .Map(v => v + 10000)
-                .LogIfFailure();
+                .LogErrorMessages();
 
             Result<int>.Success(10)
-                .LogIfSuccess(pattern: "start: {0}")
+                .LogIfSuccess(message: "start: {0}")
                 .Map(x => x + 5)
-                .LogIfSuccess(pattern: "midle: {0}")
+                .LogIfSuccess(message: "midle: {0}")
                 .Then(x => x > 10 ? Result<string>.Success("x > 10") : Result<string>.Success("x <= 10"))
                 .LogIfSuccess("result is: {result}");
 

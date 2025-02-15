@@ -15,8 +15,4 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
-	<Target Name="ShowVersion">
-		<Message Importance="high" Text="$(Version)" />
-	</Target>
-
 </Project>

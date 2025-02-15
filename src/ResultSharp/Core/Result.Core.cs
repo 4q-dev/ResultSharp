@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 
 namespace ResultSharp
 {
+    // NOTE: This file contains the implementation of the logic for the result object itself. The logic for functions, such as Try and Merge, is moved to partial files.
+
     /// <summary>
     /// Represents the result of an operation, containing success status and errors if any.
     /// </summary>
-    public sealed class Result : ResultBase<Error>
+    public sealed partial class Result : ResultBase<Error>
     {
         private Result(bool isSuccess, params Error[]? errors) : base(isSuccess, errors) { }
 
@@ -33,58 +35,6 @@ namespace ResultSharp
         /// <returns>A failed result.</returns>
         public static Result Failure(IEnumerable<Error> errors)
             => new(false, errors.ToArray());
-
-        /// <summary>
-        /// Merges multiple results into a single result.
-        /// </summary>
-        /// <param name="results">The results to merge.</param>
-        /// <returns>A merged result containing all errors if any.</returns>
-        public static Result Merge(params Result[] results)
-        {
-            var errors = results
-                .Where(r => r.IsFailure)
-                .SelectMany(r => r.Errors)
-                .ToArray();
-
-            return errors.Any() ? Failure(errors) : Success();
-        }
-
-        /// <summary>
-        /// Executes the specified action and returns a result based on the outcome.
-        /// </summary>
-        /// <param name="func">The action to execute.</param>
-        /// <param name="handler">The error handler to invoke if an exception occurs.</param>
-        /// <returns>A result indicating success or failure.</returns>
-        public static Result Try(Action func, Func<Exception, Error> handler)
-        {
-            try
-            {
-                func();
-                return Success();
-            }
-            catch (Exception e)
-            {
-                return handler.Invoke(e);
-            }
-        }
-
-        /// <summary>
-        /// Executes the specified function and returns a result based on the outcome.
-        /// </summary>
-        /// <param name="func">The function to execute.</param>
-        /// <param name="handler">The error handler to invoke if an exception occurs.</param>
-        /// <returns>A result containing the function's return value or an error.</returns>
-        public static Result<object> Try(Func<object> func, Func<Exception, Error> handler)
-        {
-            try
-            {
-                return func();
-            }
-            catch (Exception e)
-            {
-                return handler.Invoke(e);
-            }
-        }
 
         /// <summary>
         /// Implicitly converts an error to a failed result.

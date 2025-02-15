@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 

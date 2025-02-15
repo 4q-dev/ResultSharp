@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
+using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using System.Collections.ObjectModel;
 
 
-#region овсянка, если ты это смотришь, это спецально для тебя:
+#region овсянка, если ты это смотришь, это спецально для тебя
 /*⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
             ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣯⣾⣿⡿⢟⣿⠛⠉⠩⠁⠀⠀⡟⠁⠀⣀⠀⠀⠈⠙⠿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠈⠢⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
             ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣾⡿⠟⠁⣐⡮⠁⠀⡐⠀⠀⠀⠀⢰⣅⠈⠀⠒⠄⡀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠐⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -319,37 +320,6 @@ namespace ResultSharp.Tests.Unit.Extensions
 
             Assert.IsTrue(ensuredResult.IsFailure);
             Assert.AreEqual("Value too small", ensuredResult.Errors.ElementAt(0).Message);
-        }
-
-        #endregion
-
-        #region Try Methods
-
-        [Test]
-        public void Try_CapturesExceptionsAndReturnsFailure()
-        {
-            var result = Result.Try(
-                () => throw new InvalidOperationException("Test exception"),
-                ex => new Error(ex.Message, ErrorCode.InternalServerError)
-            );
-
-            Assert.IsTrue(result.IsFailure);
-            Assert.AreEqual("Test exception", result.Errors.ElementAt(0).Message);
-        }
-
-        [Test]
-        public void Try_ExecutesSuccessfully_ReturnsSuccess()
-        {
-            var result = Result.Try(() => { /* No exception */ }, ex => new Error(ex.Message));
-            Assert.IsTrue(result.IsSuccess);
-        }
-
-        [Test]
-        public void Try_ExecutesSuccessfully_ReturnsGenericSuccess()
-        {
-            var result = Result.Try(() => { return 10; }, ex => new Error(ex.Message));
-            Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(result.Value, 10);
         }
 
         #endregion

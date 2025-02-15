@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 using System.Collections.ObjectModel;
@@ -54,66 +55,6 @@ namespace ResultSharp.Tests.Unit.Core
 
             Assert.IsFalse(result.IsSuccess, "Result должен быть неуспешным.");
             Assert.AreEqual(2, result.Errors.Count, "Количество ошибок не соответствует ожидаемому.");
-        }
-
-        #endregion
-
-        #region Merge
-
-        [Test]
-        public void Merge_SuccessResults_Should_ReturnMergedSuccess()
-        {
-            var r1 = Result<int>.Success(10);
-            var r2 = Result<int>.Success(20);
-            var r3 = Result<int>.Success(30);
-
-            var merged = Result<int>.Merge(r1, r2, r3);
-
-            Assert.IsTrue(merged.IsSuccess, "Объединённый результат должен быть успешным.");
-            var values = merged.Value;
-            CollectionAssert.AreEqual(new[] { 10, 20, 30 }, values, "Объединённые значения не соответствуют ожидаемым.");
-        }
-
-        [Test]
-        public void Merge_FailureResults_Should_ReturnFailureWithErrors()
-        {
-            var error1 = new Error("Merge Error 1", ErrorCode.Failure);
-            var error2 = new Error("Merge Error 2", ErrorCode.Failure);
-            var r1 = Result<int>.Success(100);
-            var r2 = Result<int>.Failure(error1);
-            var r3 = Result<int>.Failure(error2);
-
-            var merged = Result<int>.Merge(r1, r2, r3);
-
-            Assert.IsFalse(merged.IsSuccess, "Объединённый результат должен быть неуспешным.");
-            Assert.AreEqual(2, merged.Errors.Count, "Количество ошибок не соответствует ожидаемому.");
-            Assert.That(merged.Errors.Any(e => e.Message.Contains("Merge Error 1")));
-            Assert.That(merged.Errors.Any(e => e.Message.Contains("Merge Error 2")));
-        }
-
-        [Test]
-        public void Merge_Generic_TwoTypes_Success_Should_ReturnSuccess()
-        {
-            var r1 = Result<int>.Success(10);
-            var r2 = Result<string>.Success("zaza");
-
-            var merged = Result<object>.Merge(r1, r2);
-
-            Assert.IsTrue(merged.IsSuccess, "Объединённый результат должен быть успешным.");
-        }
-
-        [Test]
-        public void Merge_Generic_Failure_Should_ReturnFailureWithErrors()
-        {
-            var error = new Error("Generic error", ErrorCode.Failure);
-            var r1 = Result<object>.Failure(error);
-            var r2 = Result<object>.Success(new object());
-
-            var merged = Result<object>.Merge(r1, r2);
-
-            Assert.IsFalse(merged.IsSuccess, "Объединённый результат должен быть неуспешным.");
-            Assert.AreEqual(1, merged.Errors.Count, "Количество ошибок не соответствует ожидаемому.");
-            Assert.That(merged.Errors.ElementAt(0).Message.Contains("Generic error"));
         }
 
         #endregion

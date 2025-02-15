@@ -2,13 +2,13 @@
 using ResultSharp.Errors;
 using System.Collections.ObjectModel;
 
-namespace ResultSharp
+namespace ResultSharp.Core
 {
     /// <summary>  
     /// Represents the result of an operation, containing success status, value, and errors if any.  
     /// </summary>  
     /// <typeparam name="TResult">The type of the result value.</typeparam>  
-    public sealed class Result<TResult> : ResultBase<Error>
+    public sealed partial class Result<TResult> : ResultBase<Error>
     {
         private readonly TResult? value;
 
@@ -41,40 +41,6 @@ namespace ResultSharp
         /// <param name="errors">The errors associated with the failure.</param>  
         /// <returns>A failed result.</returns>  
         public static Result<TResult> Failure(IEnumerable<Error> errors) => new(errors.ToArray());
-
-        /// <summary>  
-        /// Merges multiple results into a single result.  
-        /// </summary>  
-        /// <param name="results">The results to merge.</param>  
-        /// <returns>A merged result containing all errors if any, or a collection of values if successful.</returns>  
-        public static Result<IReadOnlyCollection<TResult>> Merge(params Result<TResult>[] results)
-        {
-            var errors = results
-                .Where(r => r.IsFailure)
-                .SelectMany(r => r.Errors)
-                .ToArray();
-
-            if (errors.Any())
-                return new Result<IReadOnlyCollection<TResult>>(errors);
-
-            var values = results.Select(r => r.Value).ToList().AsReadOnly();
-            return new Result<IReadOnlyCollection<TResult>>(values);
-        }
-
-        /// <summary>  
-        /// Merges multiple results into a single result.  
-        /// </summary>  
-        /// <param name="results">The results to merge.</param>  
-        /// <returns>A merged result containing all errors if any.</returns>  
-        public static Result Merge(params Result<object>[] results)
-        {
-            var errors = results
-                .Where(r => r.IsFailure)
-                .SelectMany(r => r.Errors)
-                .ToArray();
-
-            return errors.Any() ? Result.Failure(errors) : Result.Success();
-        }
 
         /// <summary>  
         /// Implicitly converts a value to a successful result.  

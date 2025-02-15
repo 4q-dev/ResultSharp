@@ -1,4 +1,5 @@
-﻿using ResultSharp.Errors;
+﻿using ResultSharp.Core;
+using ResultSharp.Errors;
 using System.Collections.ObjectModel;
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync

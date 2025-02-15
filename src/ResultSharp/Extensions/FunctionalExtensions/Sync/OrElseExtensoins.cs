@@ -1,4 +1,6 @@
-﻿namespace ResultSharp.Extensions.FunctionalExtensions.Sync
+﻿using ResultSharp.Core;
+
+namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
     public static class OrElseExtensoins
     {
