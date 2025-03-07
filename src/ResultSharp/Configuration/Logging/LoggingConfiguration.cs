@@ -7,7 +7,7 @@ namespace ResultSharp.Configuration.Logging
     /// Provides configuration for logging.  
     /// </summary>  
     public sealed class LoggingConfiguration :
-        ConfiguratoinBase<LoggingConfigurationOptions>,
+        ConfigurationBase<LoggingConfigurationOptions>,
         IConfigurable<LoggingConfigurationOptions>
     {
         private readonly object locker = new();
@@ -22,6 +22,9 @@ namespace ResultSharp.Configuration.Logging
         {
             lock (locker)
             {
+                if (configure is null)
+                    throw new ArgumentNullException(nameof(configure));
+
                 if (IsConfigured)
                     throw new InvalidOperationException("LoggingConfiguration configuration has already been set.");
 

@@ -1,4 +1,5 @@
-﻿using ResultSharp.Configuration.Logging;
+﻿using ResultSharp.Configuration.ExceptionHandler;
+using ResultSharp.Configuration.Logging;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ResultSharp.Configuration
@@ -17,6 +18,11 @@ namespace ResultSharp.Configuration
         /// Gets the logging configuration.
         /// </summary>
         public LoggingConfiguration LoggingConfiguration { get; } = new();
+
+        /// <summary>
+        /// Gets the exception handler configuration.
+        /// </summary>
+        public ExceptionHandlerConfiguration ExceptionHandlerConfiguration { get; } = new();
 
         /// <summary>
         /// Determines whether the configuration options are invalid.
