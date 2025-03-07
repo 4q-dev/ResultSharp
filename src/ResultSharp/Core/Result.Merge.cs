@@ -1,4 +1,4 @@
-﻿namespace ResultSharp
+﻿namespace ResultSharp.Core
 {
     /// <summary>
     /// Contains all Merge functins.

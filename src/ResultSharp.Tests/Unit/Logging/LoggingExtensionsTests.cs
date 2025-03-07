@@ -16,7 +16,7 @@ namespace ResultSharp.Tests.Unit.Logging
 
         #region Setup / TearDown
 
-        private Mock<ILoggingAdapter> mockLogger;
+        private Mock<ILoggingAdapter> mockLogger = default!;
 
         [SetUp]
         public void SetUp()

@@ -1,7 +1,7 @@
 ﻿using ResultSharp.Core;
 using ResultSharp.Errors;
 
-namespace ResultSharp
+namespace ResultSharp.Core
 {
     public partial class Result
     {

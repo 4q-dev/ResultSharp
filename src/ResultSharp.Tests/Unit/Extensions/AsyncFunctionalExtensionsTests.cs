@@ -1071,7 +1071,7 @@ namespace ResultSharp.Tests.Unit.Extensions
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await resultTask.UnwrapAsync());
-            Assert.AreEqual("Initial failure", ex.Message);
+            Assert.AreEqual("Initial failure", ex?.Message);
         }
 
         #endregion

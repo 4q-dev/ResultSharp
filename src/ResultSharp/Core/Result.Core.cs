@@ -2,7 +2,7 @@
 using ResultSharp.Errors;
 using System.Collections.ObjectModel;
 
-namespace ResultSharp
+namespace ResultSharp.Core
 {
     // NOTE: This file contains the implementation of the logic for the result object itself. The logic for functions, such as Try and Merge, is moved to partial files.
 
