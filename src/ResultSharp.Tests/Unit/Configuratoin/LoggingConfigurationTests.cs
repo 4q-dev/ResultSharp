@@ -1,9 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
-using ResultSharp.Configuration.Abstractions;
 using ResultSharp.Configuration.Logging;
 using ResultSharp.Logging.Abstractions;
-using ResultSharp.Tests.Helpers;
 
 namespace ResultSharp.Tests.Unit.Configuratoin
 {

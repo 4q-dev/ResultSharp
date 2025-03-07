@@ -1,4 +1,5 @@
 ﻿using ResultSharp.Configuration.Abstractions;
+using ResultSharp.Errors;
 using ResultSharp.Logging.Abstractions;
 
 namespace ResultSharp.Configuration
@@ -49,7 +50,7 @@ namespace ResultSharp.Configuration
         /// Applies the specified configuration options.  
         /// </summary>  
         /// <param name="newOptions">The new configuration options to apply.</param>  
-        private void ApplyConfiguration(ResultConfigurationOptions newOptions)
+        private static void ApplyConfiguration(ResultConfigurationOptions newOptions)
         {
             IsConfigured = true;
             options = newOptions;
@@ -66,6 +67,11 @@ namespace ResultSharp.Configuration
                 throw new InvalidOperationException("LoggingConfiguration is disabled");
 
             return GlobalOptions.LoggingConfiguration.GetLogger();
+        }
+
+        internal static Func<Exception, Error> GetExceptionHandler()
+        {
+            return GlobalOptions.ExceptionHandlerConfiguration.Options.ExceptionHandler;
         }
     }
 }

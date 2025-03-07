@@ -1,5 +1,8 @@
 - name: Начало работы
-- href: getting-started.md
+- name: Установка и конфигурация логгеров
+  href: getting-started.md
+- name: Конфигурация обработки исключений
+  href: exception-handling.md
 
 - name: Базовое использование
 - name: Основные концепции

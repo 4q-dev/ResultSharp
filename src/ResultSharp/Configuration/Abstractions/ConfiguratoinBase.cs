@@ -4,7 +4,7 @@
     /// Provides a base class for configuration with options of type <typeparamref name="TOptions"/>.
     /// </summary>
     /// <typeparam name="TOptions">The type of the configuration options.</typeparam>
-    public abstract class ConfiguratoinBase<TOptions>
+    public abstract class ConfigurationBase<TOptions> where TOptions: new()
     {
         /// <summary>
         /// Gets a value indicating whether the configuration has been applied.
@@ -15,7 +15,7 @@
         /// Gets the configuration options.
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown when the configuration has not been set.</exception>
-        public TOptions Options => options ?? throw new InvalidOperationException($"Configuration for {typeof(TOptions).Name} has not been set.");
+        public TOptions Options => options ?? new TOptions();
 
         private TOptions? options;
 
