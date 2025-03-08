@@ -29,7 +29,7 @@ public static class HttpResultExtensions
     /// <param name="result">The async result to convert</param>
     /// <param name="configureAwait">Indicates whether to configure await.</param>
     /// <returns>An <see cref="IActionResult"/> representing the result.</returns>
-    public static async Task<ActionResult> ToResponse(this Task<Result> result, bool configureAwait = true)
+    public static async Task<ActionResult> ToResponseAsync(this Task<Result> result, bool configureAwait = true)
         => ToResponse(await result.ConfigureAwait(configureAwait));
 
     /// <summary>
@@ -85,6 +85,6 @@ public static class HttpResultExtensions
     /// <param name="result">The result to convert.</param>
     /// <param name="configureAwait">Indicates whether to configure await.</param>
     /// <returns>An <see cref="IActionResult"/> representing the result.</returns>
-    public static async Task<IActionResult> ToResponse<T>(this Task<Result<T>> result, bool configureAwait = true)
+    public static async Task<IActionResult> ToResponseAsync<T>(this Task<Result<T>> result, bool configureAwait = true)
         => ToResponse(await result.ConfigureAwait(configureAwait));
 }
