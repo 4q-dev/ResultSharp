@@ -92,5 +92,14 @@ namespace ResultSharp.Errors
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>
         public static Error InternalServerError(string message = "Internal server error")
             => new(message, ErrorCode.InternalServerError);
+
+
+        /// <summary>  
+        /// Creates an bad request error with the specified message.
+        /// </summary>
+        /// <param name="message">The error message. Default is "Bad request".</param>
+        /// <returns>A new instance of the <see cref="Error"/> record.</returns>
+        public static Error BadRequest(string message = "Bad request")
+            => new(message, ErrorCode.BadRequest);
     }
 }

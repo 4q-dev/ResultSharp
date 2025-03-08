@@ -26,7 +26,7 @@ namespace ResultSharp.Core
         /// <param name="errors">The errors associated with the failure.</param>
         /// <returns>A failed result.</returns>
         public static Result Failure(params Error[] errors)
-            => new(false, errors);
+            => new(false, errors.Length > 0 ? errors : [Error.Failure()]);
 
         /// <summary>
         /// Creates a failed result with the specified errors.
