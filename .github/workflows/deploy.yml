@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for project in src/*/*.csproj; do
-            if [[ "$project" == *"Tests.csproj" ]]; then
+            if [[ "$project" == *"Tests"* ]]; then
               continue
             fi
             project_name=$(basename $(dirname $project))
