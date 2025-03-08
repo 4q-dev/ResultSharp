@@ -8,8 +8,6 @@ namespace ResultSharp.Configuration.ExceptionHandler
     /// </summary>
     public record ExceptionHandlerOptions
     {
-        internal ExceptionHandlerOptions() { }
-
         private Func<Exception, Error> exceptionHandler = static exception =>
             new Error(exception.Message, ErrorCode.Failure);
 

@@ -10,8 +10,6 @@ namespace ResultSharp.Configuration.Logging
     {
         private ILoggingAdapter? loggingAdapter;
 
-        internal LoggingConfigurationOptions() { }
-
         /// <summary>
         /// Gets or sets the logging adapter.
         /// </summary>
