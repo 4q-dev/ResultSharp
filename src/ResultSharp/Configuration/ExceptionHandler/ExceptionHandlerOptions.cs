@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 
@@ -10,6 +8,8 @@ namespace ResultSharp.Configuration.ExceptionHandler
     /// </summary>
     public record ExceptionHandlerOptions
     {
+        internal ExceptionHandlerOptions() { }
+
         private Func<Exception, Error> exceptionHandler = static exception =>
             new Error(exception.Message, ErrorCode.Failure);
 

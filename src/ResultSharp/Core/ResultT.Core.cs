@@ -78,4 +78,15 @@ namespace ResultSharp.Core
         /// <param name="result">The result to convert.</param>  
         public static implicit operator ReadOnlyCollection<Error>(Result<TResult> result) => (ReadOnlyCollection<Error>)result.Errors;
     }
+
+    public partial class Result
+    {
+        /// <summary>
+        /// Creates a successful result with the specified value.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result value.</typeparam>
+        /// <param name="result">The value of the successful result.</param>
+        /// <returns>A successful result containing the specified value.</returns>
+        public static Result<TResult> Success<TResult>(TResult result) => Result<TResult>.Success(result);
+    }
 }
