@@ -12,6 +12,16 @@ namespace ResultSharp.Tests.Unit.Core
         #region Success / Failure
 
         [Test]
+        public void SuccessResult_Should_BeSuccessful_CallFromResultClass()
+        {
+            var result = Result.Success(42);
+
+            Assert.IsInstanceOf<Result<int>>(result);
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(42, result.Value);
+        }
+
+        [Test]
         public void SuccessResult_Should_HaveValueAndBeSuccessful()
         {
             int expected = 42;

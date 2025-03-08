@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 

@@ -13,13 +13,13 @@
   - name: Объект ошибки
     href: basic-concepts/error-obj.md
 
-  - name: Результат с возвратом
-    href: basic-concepts/result-t.md
-
   - name: Результат без возврата
     href: basic-concepts/result.md
 
-  - name: Базовые функци
+  - name: Результат с возвратом
+    href: basic-concepts/result-t.md
+
+  - name: Базовые функции
     href: basic-concepts/basic-functions.md
 
 - name: Продвинутое использоание
