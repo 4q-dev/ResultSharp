@@ -2,6 +2,9 @@
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
+    /// <summary>
+    /// Provides extension methods for chaining results.
+    /// </summary>
     public static class ThenExtensions
     {
         /// <summary>  

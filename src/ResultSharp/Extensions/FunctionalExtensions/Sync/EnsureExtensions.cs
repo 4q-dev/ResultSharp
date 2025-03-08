@@ -3,6 +3,9 @@ using ResultSharp.Errors;
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
+    /// <summary>
+    /// Provides extension methods for ensuring the result satisfies a predicate.
+    /// </summary>
     public static class EnsureExtensions
     {
 

@@ -2,6 +2,9 @@
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
+    /// <summary>
+    /// Provides extension methods for mapping the result value.
+    /// </summary>
     public static class MapExtensions
     {
         /// <summary>  

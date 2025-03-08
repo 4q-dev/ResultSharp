@@ -22,6 +22,11 @@
     <RepositoryUrl>https://github.com/4q-dev/ResultSharp</RepositoryUrl>
     <License>MIT</License>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README_nuget-default.md" Pack="true" PackagePath="README.md"/>
+  </ItemGroup>
 
 </Project>
