@@ -2,6 +2,9 @@
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
+    /// <summary>
+    /// Provides extension methods for handling alternative results.
+    /// </summary>
     public static class OrElseExtensoins
     {
         /// <summary>  

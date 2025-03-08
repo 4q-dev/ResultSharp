@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
+    /// <summary>
+    /// Provides extension methods for executing actions based on the result's success or failure state.
+    /// </summary>
     public static class OnConditionExtensions
     {
         /// <summary>  

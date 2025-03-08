@@ -12,6 +12,7 @@ namespace ResultSharp.Logging.Abstractions
         /// </summary>
         /// <param name="message">The log message.</param>
         /// <param name="logLevel">The log level.</param>
+        /// <param name="context">The context.</param>
         /// <param name="args">Optional arguments for the log message.</param>
         public void Log(string message, LogLevel logLevel, string context, params object?[] args);
     }
