@@ -43,3 +43,5 @@
     href: advanced-usage/func/await.md
 - name: Логгирование
   href: advanced-usage/logging.md
+- name: Конвертация в IActionResult
+  href: advanced-usage/to-iactionresult.md

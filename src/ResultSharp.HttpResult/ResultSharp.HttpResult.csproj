@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ResultSharp\ResultSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>4q-dev.ResultSharp.HttpResult</PackageId>
+    <Authors>4q-dev</Authors>
+    <Description>Транслятор результата в HTTP ответ</Description>
+    <PackageTags>Result, Functional, Error Handling, HTTP, Response</PackageTags>
+    <RepositoryUrl>https://github.com/4q-dev/ResultSharp</RepositoryUrl>
+    <License>MIT</License>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>
