@@ -16,12 +16,12 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Sync
         /// <param name="onSuccess">The action to execute if the result is successful.</param>  
         /// <param name="onFailure">The action to execute if the result is a failure.</param>  
         /// <returns>The original result.</returns>  
-        public static Result Match(this Result result, Action onSuccess, Action onFailure)
+        public static Result Match(this Result result, Action onSuccess, Action<ReadOnlyCollection<Error>> onFailure)
         {
             switch (result.IsSuccess)
             {
                 case true: onSuccess(); break;
-                case false: onFailure(); break;
+                case false: onFailure(result); break;
             }
 
             return result;

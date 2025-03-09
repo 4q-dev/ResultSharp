@@ -1,4 +1,5 @@
 ﻿using ResultSharp.Core;
+using ResultSharp.Extensions.FunctionalExtensions.Sync;
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Async
 {
@@ -17,11 +18,7 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         public static async Task<Result> OrElseAsync(this Task<Result> result, Func<Result> alternative, bool configureAwait = true)
         {
             var r = await result.ConfigureAwait(configureAwait);
-            return r.IsSuccess switch
-            {
-                true => r,
-                false => alternative()
-            };
+            return r.OrElse(alternative);
         }
 
         /// <summary>  
@@ -34,11 +31,21 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         public static async Task<Result> OrElseAsync(this Task<Result> result, Func<Task<Result>> alternative, bool configureAwait = true)
         {
             var r = await result.ConfigureAwait(configureAwait);
-            return r.IsSuccess switch
-            {
-                true => r,
-                false => await alternative().ConfigureAwait(configureAwait)
-            };
+            return await r.OrElseAsync(alternative, configureAwait);
+        }
+
+        /// <summary>  
+        /// Returns the original result if it is successful; otherwise, returns the alternative result asynchronously.  
+        /// </summary>  
+        /// <param name="result">The original result.</param>  
+        /// <param name="alternative">The asynchronous function to generate the alternative result if the original result is a failure.</param>  
+        /// <param name="configureAwait">Indicates whether to configure await.</param>  
+        /// <returns>A task representing the original result if it is successful; otherwise, the alternative result.</returns>  
+        public static async Task<Result> OrElseAsync(this Result result, Func<Task<Result>> alternative, bool configureAwait = true)
+        {
+            if (result.IsFailure)
+                return await alternative().ConfigureAwait(configureAwait);
+            return result;
         }
 
         /// <summary>  
@@ -52,11 +59,7 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         public static async Task<Result<TResult>> OrElseAsync<TResult>(this Task<Result<TResult>> result, Func<Result<TResult>> alternative, bool configureAwait = true)
         {
             var r = await result.ConfigureAwait(configureAwait);
-            return r.IsSuccess switch
-            {
-                true => r,
-                false => alternative()
-            };
+            return r.OrElse(alternative);
         }
 
         /// <summary>  
@@ -70,11 +73,22 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         public static async Task<Result<TResult>> OrElseAsync<TResult>(this Task<Result<TResult>> result, Func<Task<Result<TResult>>> alternative, bool configureAwait = true)
         {
             var r = await result.ConfigureAwait(configureAwait);
-            return r.IsSuccess switch
-            {
-                true => r,
-                false => await alternative().ConfigureAwait(configureAwait)
-            };
+            return await r.OrElseAsync(alternative, configureAwait);
+        }
+
+        /// <summary>  
+        /// Returns the original result if it is successful; otherwise, returns the alternative result asynchronously.  
+        /// </summary>  
+        /// <typeparam name="TResult">The type of the result value.</typeparam>  
+        /// <param name="result">The original result.</param>  
+        /// <param name="alternative">The asynchronous function to generate the alternative result if the original result is a failure.</param>  
+        /// <param name="configureAwait">Indicates whether to configure await.</param>  
+        /// <returns>A task representing the original result if it is successful; otherwise, the alternative result.</returns>  
+        public static async Task<Result<TResult>> OrElseAsync<TResult>(this Result<TResult> result, Func<Task<Result<TResult>>> alternative, bool configureAwait = true)
+        {
+            if (result.IsFailure)
+                return await alternative().ConfigureAwait(configureAwait);
+            return result;
         }
     }
 }

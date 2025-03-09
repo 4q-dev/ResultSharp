@@ -61,7 +61,7 @@ namespace ResultSharp.Tests.Unit.Extensions
 
             result.Match(
                 onSuccess: () => successCalled = true,
-                onFailure: () => failureCalled = true
+                onFailure: _ => failureCalled = true
             );
 
             Assert.IsTrue(successCalled);
@@ -77,7 +77,7 @@ namespace ResultSharp.Tests.Unit.Extensions
 
             result.Match(
                 onSuccess: () => successCalled = true,
-                onFailure: () => failureCalled = true
+                onFailure: _ => failureCalled = true
             );
 
             Assert.IsFalse(successCalled);
