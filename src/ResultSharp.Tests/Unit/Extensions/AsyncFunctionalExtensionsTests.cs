@@ -68,6 +68,90 @@ namespace ResultSharp.Tests.Unit.Extensions
             Assert.AreEqual("Initial failure", result.Errors.First().Message);
         }
 
+        [Test]
+        public async Task EnsureAsync_WithAsyncPredicate_WhenResultIsSuccessAndPredicateIsTrue_ShouldReturnSuccess()
+        {
+            var resultTask = Task.FromResult(Result.Success(10));
+
+            var result = await resultTask.EnsureAsync(async value =>
+            {
+                await Task.Delay(1);
+                return value > 5;
+            });
+
+            Assert.IsTrue(result.IsSuccess);
+        }
+
+        [Test]
+        public async Task EnsureAsync_WithAsyncPredicate_WhenResultIsSuccessAndPredicateIsFalse_ShouldReturnFailure()
+        {
+            var resultTask = Task.FromResult(Result.Success(10));
+
+            var result = await resultTask.EnsureAsync(async value =>
+            {
+                await Task.Delay(1);
+                return value < 5;
+            });
+
+            Assert.IsTrue(result.IsFailure);
+        }
+
+        [Test]
+        public async Task EnsureAsync_WithAsyncPredicate_WhenResultIsFailureAndPredicateIsFalse_ShouldReturnFailure()
+        {
+            var resultTask = Task.FromResult(Result<int>.Failure());
+
+            var result = await resultTask.EnsureAsync(async value =>
+            {
+                await Task.Delay(1);
+                return value < 5;
+            });
+
+            Assert.IsTrue(result.IsFailure);
+        }
+
+        [Test]
+        public async Task EnsureAsync_WithAsyncPredicateAndSyncResult_WhenResultIsSuccessAndPredicateIsTrue_ShouldReturnSuccess()
+        {
+            var result = Result.Success(10);
+
+            var actual = await result.EnsureAsync(async value =>
+            {
+                await Task.Delay(1);
+                return value > 5;
+            });
+
+            Assert.IsTrue(actual.IsSuccess);
+        }
+
+        [Test]
+        public async Task EnsureAsync_WithAsyncPredicateAndSyncResult_WhenResultIsSuccessAndPredicateIsFalse_ShouldReturnFailure()
+        {
+            var resultTask = Result.Success(10);
+
+            var result = await resultTask.EnsureAsync(async value =>
+            {
+                await Task.Delay(1);
+                return value < 5;
+            });
+
+            Assert.IsTrue(result.IsFailure);
+        }
+
+        [Test]
+        public async Task EnsureAsync_WithAsyncPredicateAndSyncResult_WhenResultIsFailureAndPredicateIsFalse_ShouldReturnFailure()
+        {
+            var resultTask = Result<int>.Failure();
+
+            var result = await resultTask.EnsureAsync(async value =>
+            {
+                await Task.Delay(1);
+                return value < 5;
+            });
+
+            Assert.IsTrue(result.IsFailure);
+        }
+
         #endregion
 
         #region MapAsync Methods
@@ -102,66 +186,138 @@ namespace ResultSharp.Tests.Unit.Extensions
             Assert.AreEqual("Initial failure", result.Errors.ElementAt(0).Message);
         }
 
+        [Test]
+        public async Task MapAsync_WithSuccessfulResultAndAsyncMap_ShouldReturnMappedResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Success(10));
+
+            // Act
+            var mappedResult = await result.MapAsync(async value =>
+            {
+                await Task.Delay(10);
+                return value.ToString();
+            });
+
+            // Assert
+            Assert.IsTrue(mappedResult.IsSuccess);
+            Assert.AreEqual("10", mappedResult.Value);
+        }
+
+        [Test]
+        public async Task MapAsync_WithFailedResultAndAsyncMap_ShouldReturnFailedResult()
+        {
+            // Arrange
+            var errors = new List<Error> { Error.Failure("Test error") };
+            var result = Task.FromResult(Result<int>.Failure(errors));
+
+            // Act
+            var mappedResult = await result.MapAsync(async value =>
+            {
+                await Task.Delay(10);
+                return value.ToString();
+            });
+
+            // Assert
+            Assert.IsTrue(mappedResult.IsFailure);
+            Assert.AreEqual(errors, mappedResult.Errors);
+        }
+
+        [Test]
+        public async Task MapAsync_WithSuccessfulResultAndAsyncMapDirect_ShouldReturnMappedResult()
+        {
+            // Arrange
+            var result = Result.Success(10);
+
+            // Act
+            var mappedResult = await result.MapAsync(async value =>
+            {
+                await Task.Delay(10);
+                return value.ToString();
+            });
+
+            // Assert
+            Assert.IsTrue(mappedResult.IsSuccess);
+            Assert.AreEqual("10", mappedResult.Value);
+        }
+
+        [Test]
+        public async Task MapAsync_WithFailedResultAndAsyncMapDirect_ShouldReturnFailedResult()
+        {
+            // Arrange
+            var errors = new List<Error> { Error.Failure("Test error") };
+            var result = Result<int>.Failure(errors);
+
+            // Act
+            var mappedResult = await result.MapAsync(async value =>
+            {
+                await Task.Delay(10);
+                return value.ToString();
+            });
+
+            // Assert
+            Assert.IsTrue(mappedResult.IsFailure);
+            Assert.AreEqual(errors, mappedResult.Errors);
+        }
+
         #endregion
 
         #region MatchAsync Methods
 
         [Test]
-        public async Task MatchAsync_WhenResultIsSuccess_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithSuccessResult_ShouldExecuteOnSuccessAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Success());
+            var result = Task.FromResult(Result.Success());
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
+            await result.MatchAsync(
                 onSuccess: () => onSuccessExecuted = true,
-                onFailure: () => onFailureExecuted = false
+                onFailure: _ => onFailureExecuted = false
             );
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsTrue(onSuccessExecuted);
             Assert.IsFalse(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WhenResultIsFailure_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithFailureResult_ShouldExecuteOnFailureAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
+            await result.MatchAsync(
                 onSuccess: () => onSuccessExecuted = false,
-                onFailure: () => onFailureExecuted = true
+                onFailure: _ => onFailureExecuted = true
             );
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
             Assert.IsFalse(onSuccessExecuted);
             Assert.IsTrue(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WithAsyncActions_WhenResultIsSuccess_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithSuccessResultAndAsyncActions_ShouldExecuteOnSuccessAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Success());
+            var result = Task.FromResult(Result.Success());
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
+            await result.MatchAsync(
                 onSuccess: async () =>
                 {
                     await Task.Delay(10);
                     onSuccessExecuted = true;
                 },
-                onFailure: async () =>
+                onFailure: async _ =>
                 {
                     await Task.Delay(10);
                     onFailureExecuted = false;
@@ -169,27 +325,26 @@ namespace ResultSharp.Tests.Unit.Extensions
             );
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsTrue(onSuccessExecuted);
             Assert.IsFalse(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WithAsyncActions_WhenResultIsFailure_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithFailureResultAndAsyncActions_ShouldExecuteOnFailureAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
+            await result.MatchAsync(
                 onSuccess: async () =>
                 {
                     await Task.Delay(10);
                     onSuccessExecuted = false;
                 },
-                onFailure: async () =>
+                onFailure: async _ =>
                 {
                     await Task.Delay(10);
                     onFailureExecuted = true;
@@ -197,61 +352,112 @@ namespace ResultSharp.Tests.Unit.Extensions
             );
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
             Assert.IsFalse(onSuccessExecuted);
             Assert.IsTrue(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericResult_WhenResultIsSuccess_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithSuccessResultDirect_ShouldExecuteOnSuccessAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result<int>.Success(10));
+            var result = Result.Success();
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
-                onSuccess: value => onSuccessExecuted = value == 10,
-                onFailure: errors => onFailureExecuted = false
+            await result.MatchAsync(
+                onSuccess: async () =>
+                {
+                    await Task.Delay(10);
+                    onSuccessExecuted = true;
+                },
+                onFailure: async _ =>
+                {
+                    await Task.Delay(10);
+                    onFailureExecuted = false;
+                }
             );
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsTrue(onSuccessExecuted);
             Assert.IsFalse(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericResult_WhenResultIsFailure_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithFailureResultDirect_ShouldExecuteOnFailureAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
+            var result = Result.Failure(Error.Failure("Test error"));
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
-                onSuccess: value => onSuccessExecuted = false,
-                onFailure: errors => onFailureExecuted = true
+            await result.MatchAsync(
+                onSuccess: async () =>
+                {
+                    await Task.Delay(10);
+                    onSuccessExecuted = false;
+                },
+                onFailure: async _ =>
+                {
+                    await Task.Delay(10);
+                    onFailureExecuted = true;
+                }
             );
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
             Assert.IsFalse(onSuccessExecuted);
             Assert.IsTrue(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericResultAndAsyncActions_WhenResultIsSuccess_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithGenericSuccessResult_ShouldExecuteOnSuccessAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result<int>.Success(10));
+            var result = Task.FromResult(Result<int>.Success(10));
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
+            await result.MatchAsync(
+                onSuccess: value => onSuccessExecuted = value == 10,
+                onFailure: errors => onFailureExecuted = false
+            );
+
+            // Assert
+            Assert.IsTrue(onSuccessExecuted);
+            Assert.IsFalse(onFailureExecuted);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericFailureResult_ShouldExecuteOnFailureAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var onSuccessExecuted = false;
+            var onFailureExecuted = false;
+
+            // Act
+            await result.MatchAsync(
+                onSuccess: value => onSuccessExecuted = false,
+                onFailure: errors => onFailureExecuted = true
+            );
+
+            // Assert
+            Assert.IsFalse(onSuccessExecuted);
+            Assert.IsTrue(onFailureExecuted);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericSuccessResultAndAsyncActions_ShouldExecuteOnSuccessAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var onSuccessExecuted = false;
+            var onFailureExecuted = false;
+
+            // Act
+            await result.MatchAsync(
                 onSuccess: async value =>
                 {
                     await Task.Delay(10);
@@ -265,21 +471,20 @@ namespace ResultSharp.Tests.Unit.Extensions
             );
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsTrue(onSuccessExecuted);
             Assert.IsFalse(onFailureExecuted);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericResultAndAsyncActions_WhenResultIsFailure_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithGenericFailureResultAndAsyncActions_ShouldExecuteOnFailureAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
             var onSuccessExecuted = false;
             var onFailureExecuted = false;
 
             // Act
-            var result = await resultTask.MatchAsync(
+            await result.MatchAsync(
                 onSuccess: async value =>
                 {
                     await Task.Delay(10);
@@ -293,7 +498,60 @@ namespace ResultSharp.Tests.Unit.Extensions
             );
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
+            Assert.IsFalse(onSuccessExecuted);
+            Assert.IsTrue(onFailureExecuted);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericSuccessResultDirect_ShouldExecuteOnSuccessAction()
+        {
+            // Arrange
+            var result = Result<int>.Success(10);
+            var onSuccessExecuted = false;
+            var onFailureExecuted = false;
+
+            // Act
+            await result.MatchAsync(
+                onSuccess: async value =>
+                {
+                    await Task.Delay(10);
+                    onSuccessExecuted = value == 10;
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    onFailureExecuted = false;
+                }
+            );
+
+            // Assert
+            Assert.IsTrue(onSuccessExecuted);
+            Assert.IsFalse(onFailureExecuted);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericFailureResultDirect_ShouldExecuteOnFailureAction()
+        {
+            // Arrange
+            var result = Result<int>.Failure(Error.Failure("Test error"));
+            var onSuccessExecuted = false;
+            var onFailureExecuted = false;
+
+            // Act
+            await result.MatchAsync(
+                onSuccess: async value =>
+                {
+                    await Task.Delay(10);
+                    onSuccessExecuted = false;
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    onFailureExecuted = true;
+                }
+            );
+
+            // Assert
             Assert.IsFalse(onSuccessExecuted);
             Assert.IsTrue(onFailureExecuted);
         }
@@ -302,277 +560,485 @@ namespace ResultSharp.Tests.Unit.Extensions
 
         #region OnSuccessAsync / OnFailureAsync Methods
 
+        #region OnSuccessAsync Methods
+
         [Test]
-        public async Task OnSuccessAsync_WhenResultIsSuccess_ShouldExecuteAction()
+        public async Task OnSuccessAsync_WithSuccessResult_ShouldExecuteAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Success());
+            var result = Task.FromResult(Result.Success());
             var actionExecuted = false;
 
             // Act
-            var result = await resultTask.OnSuccessAsync(() => actionExecuted = true);
+            await result.OnSuccessAsync(() => actionExecuted = true);
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsTrue(actionExecuted);
         }
 
         [Test]
-        public async Task OnSuccessAsync_WhenResultIsFailure_ShouldNotExecuteAction()
+        public async Task OnSuccessAsync_WithFailureResult_ShouldNotExecuteAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
             var actionExecuted = false;
 
             // Act
-            var result = await resultTask.OnSuccessAsync(() => actionExecuted = false);
+            await result.OnSuccessAsync(() => actionExecuted = true);
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
             Assert.IsFalse(actionExecuted);
         }
 
         [Test]
-        public async Task OnSuccessAsync_WithAsyncAction_WhenResultIsSuccess_ShouldExecuteAction()
+        public async Task OnSuccessAsync_WithSuccessResultAndAsyncAction_ShouldExecuteAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Success());
+            var result = Task.FromResult(Result.Success());
             var actionExecuted = false;
 
             // Act
-            var result = await resultTask.OnSuccessAsync(async () =>
+            await result.OnSuccessAsync(async () =>
             {
                 await Task.Delay(10);
                 actionExecuted = true;
             });
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsTrue(actionExecuted);
         }
 
         [Test]
-        public async Task OnSuccessAsync_WithAsyncAction_WhenResultIsFailure_ShouldNotExecuteAction()
+        public async Task OnSuccessAsync_WithFailureResultAndAsyncAction_ShouldNotExecuteAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
             var actionExecuted = false;
 
             // Act
-            var result = await resultTask.OnSuccessAsync(async () =>
-            {
-                await Task.Delay(10);
-                actionExecuted = false;
-            });
-
-            // Assert
-            Assert.IsTrue(result.IsFailure);
-            Assert.IsFalse(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnSuccessAsync_WithGenericResult_WhenResultIsSuccessActions_ShouldExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result<int>.Success(5));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnSuccessAsync((value) => actionExecuted = value == 5);
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.IsTrue(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnSuccessAsync_WithGenericResult_WhenResultIsFailure_ShouldNotExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnSuccessAsync((value) => actionExecuted = false);
-
-            // Assert
-            Assert.IsTrue(result.IsFailure);
-            Assert.IsFalse(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnSuccessAsync_WithGenericResult_WithAsyncAction_WhenResultIsSuccess_ShouldExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result<int>.Success(5));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnSuccessAsync(async (value) =>
-            {
-                await Task.Delay(10);
-                actionExecuted = value == 5;
-            });
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.IsTrue(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnSuccessAsync_WithGenericResult_WithAsyncAction_WhenResultIsFailure_ShouldNotExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnSuccessAsync(async (val) =>
-            {
-                await Task.Delay(10);
-                actionExecuted = false;
-            });
-
-            // Assert
-            Assert.IsTrue(result.IsFailure);
-            Assert.IsFalse(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnFailureAsync_WhenResultIsFailure_ShouldExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnFailureAsync(() => actionExecuted = true);
-
-            // Assert
-            Assert.IsTrue(result.IsFailure);
-            Assert.IsTrue(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnFailureAsync_WhenResultIsSuccess_ShouldNotExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result.Success());
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnFailureAsync(() => actionExecuted = false);
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.IsFalse(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnFailureAsync_WithAsyncAction_WhenResultIsFailure_ShouldExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result.Failure(Error.Failure("Initial failure")));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnFailureAsync(async () =>
+            await result.OnSuccessAsync(async () =>
             {
                 await Task.Delay(10);
                 actionExecuted = true;
             });
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
-            Assert.IsTrue(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnFailureAsync_WithAsyncAction_WhenResultIsSuccess_ShouldNotExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result.Success());
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnFailureAsync(async () =>
-            {
-                await Task.Delay(10);
-                actionExecuted = false;
-            });
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
             Assert.IsFalse(actionExecuted);
         }
 
         [Test]
-        public async Task OnFailureAsync_WithGenericResult_WhenResultIsSuccessActions_ShouldNotExecuteAction()
+        public async Task OnSuccessAsync_WithSuccessResultDirect_ShouldExecuteAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result<int>.Success(5));
+            var result = Result.Success();
             var actionExecuted = false;
 
             // Act
-            var result = await resultTask.OnFailureAsync((value) => actionExecuted = true);
-
-            // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.IsFalse(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnFailureAsync_WithGenericResult_WhenResultIsFailure_ShouldExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnFailureAsync((value) => actionExecuted = true);
-
-            // Assert
-            Assert.IsTrue(result.IsFailure);
-            Assert.IsTrue(actionExecuted);
-        }
-
-        [Test]
-        public async Task OnFailureAsync_WithGenericResult_WithAsyncAction_WhenResultIsSuccess_ShouldNotExecuteAction()
-        {
-            // Arrange
-            var resultTask = Task.FromResult(Result<int>.Success(5));
-            var actionExecuted = false;
-
-            // Act
-            var result = await resultTask.OnFailureAsync(async (value) =>
+            await result.OnSuccessAsync(async () =>
             {
                 await Task.Delay(10);
                 actionExecuted = true;
             });
 
             // Assert
-            Assert.IsTrue(result.IsSuccess);
-            Assert.IsFalse(actionExecuted);
+            Assert.IsTrue(actionExecuted);
         }
 
         [Test]
-        public async Task OnFailureAsync_WithGenericResult_WithAsyncAction_WhenResultIsFailure_ShouldExecuteAction()
+        public async Task OnSuccessAsync_WithFailureResultDirect_ShouldNotExecuteAction()
         {
             // Arrange
-            var resultTask = Task.FromResult(Result<int>.Failure(Error.Failure("Initial failure")));
+            var result = Result.Failure(Error.Failure("Test error"));
             var actionExecuted = false;
 
             // Act
-            var result = await resultTask.OnFailureAsync(async (val) =>
+            await result.OnSuccessAsync(async () =>
             {
                 await Task.Delay(10);
                 actionExecuted = true;
             });
 
             // Assert
-            Assert.IsTrue(result.IsFailure);
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericSuccessResult_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(value => actionExecuted = value == 10);
+
+            // Assert
             Assert.IsTrue(actionExecuted);
         }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericFailureResult_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(value => actionExecuted = true);
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericSuccessResultAndAsyncAction_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(async value =>
+            {
+                await Task.Delay(10);
+                actionExecuted = value == 10;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericFailureResultAndAsyncAction_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(async value =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericSuccessResultDirect_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Success(10);
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(async value =>
+            {
+                await Task.Delay(10);
+                actionExecuted = value == 10;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericFailureResultDirect_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Failure(Error.Failure("Test error"));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(async value =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericFailureResultDirectAndAsyncAction_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Failure(Error.Failure("Test error"));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnSuccessAsync_WithGenericSuccessResultDirectAndAsyncAction_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Success(10);
+            var actionExecuted = false;
+
+            // Act
+            await result.OnSuccessAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        #endregion
+
+        #region OnFailureAsync Methods
+
+        [Test]
+        public async Task OnFailureAsync_WithFailureResult_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(() => actionExecuted = true);
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithSuccessResult_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Success());
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(() => actionExecuted = true);
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithFailureResultAndAsyncAction_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithSuccessResultAndAsyncAction_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Success());
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithFailureResultDirect_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Result.Failure(Error.Failure("Test error"));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithSuccessResultDirect_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Result.Success();
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericFailureResult_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(errors => actionExecuted = true);
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericSuccessResult_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(errors => actionExecuted = true);
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericFailureResultAndAsyncAction_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async errors =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericSuccessResultAndAsyncAction_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async errors =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericFailureResultDirect_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Failure(Error.Failure("Test error"));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async errors =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericSuccessResultDirect_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Success(10);
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async errors =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericFailureResultDirectAndAsyncAction_ShouldExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Failure(Error.Failure("Test error"));
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithGenericSuccessResultDirectAndAsyncAction_ShouldNotExecuteAction()
+        {
+            // Arrange
+            var result = Result<int>.Success(10);
+            var actionExecuted = false;
+
+            // Act
+            await result.OnFailureAsync(async () =>
+            {
+                await Task.Delay(10);
+                actionExecuted = true;
+            });
+
+            // Assert
+            Assert.IsFalse(actionExecuted);
+        }
+
+        #endregion
 
         #endregion
 
