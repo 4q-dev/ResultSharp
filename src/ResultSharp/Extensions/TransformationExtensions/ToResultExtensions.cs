@@ -1,6 +1,5 @@
 ﻿using ResultSharp.Core;
 using ResultSharp.Errors;
-using ResultSharp.Errors.Enums;
 
 namespace ResultSharp.Extensions.TransformationExtensions
 {
