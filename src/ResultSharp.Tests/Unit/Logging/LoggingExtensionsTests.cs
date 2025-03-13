@@ -321,7 +321,7 @@ namespace ResultSharp.Tests.Unit.Logging
             var result = Task.FromResult(Result.Failure(new Error("Failure")));
             await result.LogIfFailureAsync("Failure message");
 
-            mockLogger.Verify(logger => logger.Log("Failure message", LogLevel.Error, "ResultLogger", LogLevel.Error, It.IsAny<object[]>()), Times.Once);
+            mockLogger.Verify(logger => logger.Log("Failure message", LogLevel.Error, "ResultLogger", It.IsAny<object[]>()), Times.Once);
         }
 
         [Test]
