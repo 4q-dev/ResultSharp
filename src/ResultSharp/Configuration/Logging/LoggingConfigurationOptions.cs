@@ -18,22 +18,10 @@ namespace ResultSharp.Configuration.Logging
         /// <exception cref="InvalidOperationException">Thrown when attempting to set the logging adapter more than once.</exception>
         public ILoggingAdapter LoggingAdapter
         {
-            get
-            {
-                if (loggingAdapter is null)
-                    throw new InvalidOperationException("LoggingAdapter is not set.");
-                return loggingAdapter;
-            }
-            set
-            {
-                if (value is null)
-                    throw new ArgumentNullException(nameof(value), "LoggingAdapter cannot be null.");
-
-                if (loggingAdapter is not null)
-                    throw new InvalidOperationException("LoggingAdapter has already been set.");
-
-                loggingAdapter = value;
-            }
+            get => loggingAdapter ?? throw new InvalidOperationException("LoggingAdapter is not set.");
+            set => loggingAdapter = loggingAdapter is not null
+                ? throw new InvalidOperationException("LoggingAdapter has already been set.")
+                : value ?? throw new ArgumentNullException(nameof(value), "LoggingAdapter cannot be null.");
         }
 
         /// <summary>

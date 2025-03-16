@@ -1,4 +1,6 @@
-﻿namespace ResultSharp.Core
+﻿using ResultSharp.Errors;
+
+namespace ResultSharp.Core
 {
     public partial class Result<TResult>
     {
@@ -9,16 +11,29 @@
         /// <returns>A merged result containing all errors if any, or a collection of values if successful.</returns>  
         public static Result<IReadOnlyCollection<TResult>> Merge(params Result<TResult>[] results)
         {
-            var errors = results
-                .Where(r => r.IsFailure)
-                .SelectMany(r => r.Errors)
-                .ToArray();
+            if (results.Length == 0)
+                return Result<IReadOnlyCollection<TResult>>.Success(Array.Empty<TResult>().AsReadOnly());
 
-            if (errors.Length != 0)
-                return new Result<IReadOnlyCollection<TResult>>(errors);
+            List<Error>? errors = null;
+            List<TResult>? values = null;
 
-            var values = results.Select(r => r.Value).ToList().AsReadOnly();
-            return new Result<IReadOnlyCollection<TResult>>(values);
+            foreach (var result in results)
+            {
+                if (result.IsFailure)
+                {
+                    errors ??= [];
+                    errors.AddRange(result.Errors);
+                }
+                else
+                {
+                    values ??= new List<TResult>(results.Length); 
+                    values.Add(result.Value);
+                }
+            }
+
+            return errors is not null
+                ? Result<IReadOnlyCollection<TResult>>.Failure(errors.ToArray()) 
+                : Result<IReadOnlyCollection<TResult>>.Success(values?.AsReadOnly() ?? Array.Empty<TResult>().AsReadOnly());
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace ResultSharp.Core
+﻿using ResultSharp.Errors;
+
+namespace ResultSharp.Core
 {
     /// <summary>
     /// Contains all Merge functins.
@@ -12,12 +14,19 @@
         /// <returns>A merged result containing all errors if any.</returns>
         public static Result Merge(params Result[] results)
         {
-            var errors = results
-                .Where(r => r.IsFailure)
-                .SelectMany(r => r.Errors)
-                .ToArray();
+            if (results.Length == 0) return Success();
 
-            return errors.Length != 0 ? Failure(errors) : Success();
+            List<Error>? errors = null;
+            foreach (var result in results)
+            {
+                if (result.IsFailure)
+                {
+                    errors ??= [];
+                    errors.AddRange(result.Errors);
+                }
+            }
+
+            return errors is null ? Success() : Failure(errors);
         }
 
         /// <summary>

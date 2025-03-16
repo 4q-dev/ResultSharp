@@ -31,33 +31,33 @@ namespace ResultSharp.Errors
         /// <summary>  
         /// Creates a failure error with the specified message.  
         /// </summary>  
-        /// <param name="message">The error message. Default is "Operation failure."</param>  
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.OperationFailure"/></param>  
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>  
-        public static Error Failure(string message = "Operation failure.")
+        public static Error Failure(string message = ErrorMessages.OperationFailure)
             => new(message);
 
         /// <summary>
         /// Creates a validation error with the specified message.
         /// </summary>
-        /// <param name="message">The error message. Default is "Validation error."</param>
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.ValidationError"/></param>
         /// <returns>A new instance of the <see cref="Error"/></returns>
-        public static Error Validation(string message = "Validation error.")
+        public static Error Validation(string message = ErrorMessages.ValidationError)
             => new(message, ErrorCode.Validation);
 
         /// <summary>  
         /// Creates a not found error with the specified message.  
         /// </summary>  
-        /// <param name="message">The error message. Default is "The requested resource was not found."</param>  
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.NotFound"/></param>  
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>  
-        public static Error NotFound(string message = "The requested resource was not found.")
+        public static Error NotFound(string message = ErrorMessages.NotFound)
             => new(message, ErrorCode.NotFound);
 
         /// <summary>  
         /// Creates a creation error with the specified message.  
         /// </summary>  
-        /// <param name="message">The error message. Default is "Failed to create a resource."</param>  
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.CreationError"/></param>  
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>  
-        public static Error Creation(string message = "Failed to create a resource.")
+        public static Error Creation(string message = ErrorMessages.CreationError)
             => new(message, ErrorCode.Creation);
 
         /// <summary>  
@@ -71,35 +71,33 @@ namespace ResultSharp.Errors
         /// <summary>  
         /// Creates an unauthorized error with the specified message.  
         /// </summary>  
-        /// <param name="message">The error message. Default is "The user is not logged in."</param>  
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.Unauthorized"/></param>  
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>  
-        public static Error Unauthorized(string message = "The user is not logged in.")
+        public static Error Unauthorized(string message = ErrorMessages.Unauthorized)
             => new(message, ErrorCode.Unauthorized);
 
         /// <summary>  
         /// Creates a forbidden error with the specified message.  
         /// </summary>  
-        /// <param name="message">The error message. Default is "Access is denied."</param>  
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.Forbidden"/></param>  
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>  
-        public static Error Forbidden(string message = "Access is denied.")
+        public static Error Forbidden(string message = ErrorMessages.Forbidden)
             => new(message, ErrorCode.Forbidden);
 
-        
         /// <summary>  
         /// Creates an internal server error with the specified message.
         /// </summary>
-        /// <param name="message">The error message. Default is "Internal server error".</param>
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.InternalServerError"/></param>
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>
-        public static Error InternalServerError(string message = "Internal server error")
+        public static Error InternalServerError(string message = ErrorMessages.InternalServerError)
             => new(message, ErrorCode.InternalServerError);
 
-
         /// <summary>  
-        /// Creates an bad request error with the specified message.
+        /// Creates a bad request error with the specified message.
         /// </summary>
-        /// <param name="message">The error message. Default is "Bad request".</param>
+        /// <param name="message">The error message. Default is <see cref="ErrorMessages.BadRequest"/></param>
         /// <returns>A new instance of the <see cref="Error"/> record.</returns>
-        public static Error BadRequest(string message = "Bad request")
+        public static Error BadRequest(string message = ErrorMessages.BadRequest)
             => new(message, ErrorCode.BadRequest);
     }
 }

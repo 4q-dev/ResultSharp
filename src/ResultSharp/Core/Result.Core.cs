@@ -48,7 +48,7 @@ namespace ResultSharp.Core
         /// </summary>
         /// <param name="errors">The errors to convert.</param>
         public static implicit operator Result(List<Error> errors)
-            => new(false, errors.ToArray());
+            => new(false, [.. errors]);
 
         /// <summary>
         /// Implicitly converts an array of errors to a failed result.
