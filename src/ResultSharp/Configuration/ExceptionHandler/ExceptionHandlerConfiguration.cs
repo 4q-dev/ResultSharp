@@ -21,16 +21,15 @@ namespace ResultSharp.Configuration.ExceptionHandler
         {
             lock (locker)
             {
-                if (configure is null)
-                    throw new ArgumentNullException(nameof(configure));
+                ArgumentNullException.ThrowIfNull(configure); 
+
+                var newOptions = new ExceptionHandlerOptions();
+                configure(newOptions); 
 
                 if (IsConfigured)
                     throw new InvalidOperationException("ExceptionHandlerConfiguration configuration has already been set.");
 
-                var newOptions = new ExceptionHandlerOptions();
-                configure(newOptions);
-
-                ApplyConfiguration(newOptions);
+                ApplyConfiguration(newOptions); 
             }
         }
     }

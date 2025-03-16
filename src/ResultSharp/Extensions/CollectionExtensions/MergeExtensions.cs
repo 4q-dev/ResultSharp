@@ -13,7 +13,7 @@ namespace ResultSharp.Extensions.CollectionExtensions
         /// <param name="results">The collection of Result objects to merge.</param>  
         /// <returns>A merged Result containing all errors if any.</returns>  
         public static Result Merge(this ICollection<Result> results)
-            => Result.Merge(results.ToArray());
+            => Result.Merge([.. results]);
 
         /// <summary>  
         /// Merges a collection of Result objects with a specified result type into a single Result.  
@@ -22,6 +22,6 @@ namespace ResultSharp.Extensions.CollectionExtensions
         /// <param name="results">The collection of Result objects to merge.</param>  
         /// <returns>A merged Result containing all errors if any, or a collection of values if successful.</returns>  
         public static Result<IReadOnlyCollection<TResult>> Merge<TResult>(this ICollection<Result<TResult>> results)
-            => Result<TResult>.Merge(results.ToArray());
+            => Result<TResult>.Merge([.. results]);
     }
 }

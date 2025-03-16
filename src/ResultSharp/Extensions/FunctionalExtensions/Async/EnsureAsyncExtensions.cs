@@ -20,6 +20,9 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         /// <returns>A task representing the result of the operation, containing the original result if the predicate is satisfied, or the specified error if not.</returns>  
         public static async Task<Result<TResult>> EnsureAsync<TResult>(this Task<Result<TResult>> result, Predicate<TResult> predicate, Error? onFailure = default, bool configureAwait = true)
         {
+            ArgumentNullException.ThrowIfNull(result);
+            ArgumentNullException.ThrowIfNull(predicate);
+
             var r = await result.ConfigureAwait(configureAwait);
             return r.Ensure(predicate, onFailure);
         }
@@ -35,6 +38,9 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         /// <returns>A task representing the result of the operation, containing the original result if the predicate is satisfied, or the specified error if not.</returns>  
         public static async Task<Result<TResult>> EnsureAsync<TResult>(this Task<Result<TResult>> result, Func<TResult, Task<bool>> predicate, Error? onFailure = default, bool configureAwait = true)
         {
+            ArgumentNullException.ThrowIfNull(result);
+            ArgumentNullException.ThrowIfNull(predicate);
+
             var r = await result.ConfigureAwait(configureAwait);
             return await r.EnsureAsync(predicate, onFailure, configureAwait);
         }
@@ -50,13 +56,14 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         /// <returns>A task representing the result of the operation, containing the original result if the predicate is satisfied, or the specified error if not.</returns>  
         public static async Task<Result<TResult>> EnsureAsync<TResult>(this Result<TResult> result, Func<TResult, Task<bool>> predicate, Error? onFailure = default, bool configureAwait = true)
         {
-            return result.IsSuccess switch
-            {
-                true => await predicate(result).ConfigureAwait(configureAwait)
-                    ? result
-                    : onFailure ?? Error.Failure(),
-                false => result
-            };
+            ArgumentNullException.ThrowIfNull(result);
+            ArgumentNullException.ThrowIfNull(predicate);
+
+            if (!result.IsSuccess)
+                return result;
+
+            bool isValid = await predicate(result.Value).ConfigureAwait(configureAwait);
+            return isValid ? result : onFailure ?? Error.Failure();
         }
     }
 }

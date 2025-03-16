@@ -22,8 +22,7 @@ namespace ResultSharp.Configuration.Logging
         {
             lock (locker)
             {
-                if (configure is null)
-                    throw new ArgumentNullException(nameof(configure));
+                ArgumentNullException.ThrowIfNull(configure);
 
                 if (IsConfigured)
                     throw new InvalidOperationException("LoggingConfiguration configuration has already been set.");
@@ -38,11 +37,12 @@ namespace ResultSharp.Configuration.Logging
             }
         }
 
-        /// <summary>  
-        /// Gets the logger from the configured options.  
-        /// </summary>  
-        /// <returns>The configured logger.</returns>  
         internal ILoggingAdapter GetLogger()
-            => Options.LoggingAdapter;
+        {
+            lock (locker)
+            {
+                return Options.LoggingAdapter;
+            }
+        }
     }
 }

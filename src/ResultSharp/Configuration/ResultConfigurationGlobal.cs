@@ -31,6 +31,8 @@ namespace ResultSharp.Configuration
         /// <exception cref="ArgumentException">Thrown when the configuration options are invalid.</exception>  
         public void Configure(Action<ResultConfigurationOptions> configure)
         {
+            ArgumentNullException.ThrowIfNull(configure);
+
             lock (locker)
             {
                 if (IsConfigured)

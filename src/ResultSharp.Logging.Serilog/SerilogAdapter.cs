@@ -6,18 +6,13 @@ namespace ResultSharp.Logging.Serilog
     /// <summary>
     /// Adapts the Serilog Logger to the ILoggingAdapter interface.
     /// </summary>
-    public class SerilogAdapter : ILoggingAdapter
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="SerilogAdapter"/> class.
+    /// </remarks>
+    /// <param name="logger">The Serilog logger to adapt.</param>
+    public class SerilogAdapter(ILogger logger) : ILoggingAdapter
     {
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SerilogAdapter"/> class.
-        /// </summary>
-        /// <param name="logger">The Serilog logger to adapt.</param>
-        public SerilogAdapter(ILogger logger)
-        {
-            this.logger = logger;
-        }
+        private readonly ILogger logger = logger;
 
         /// <summary>
         /// Logs the specified message with the given log level and context.

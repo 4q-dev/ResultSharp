@@ -16,11 +16,14 @@ namespace ResultSharp.Extensions.CollectionExtensions
         /// <returns>A string containing the summarized error messages.</returns>
         public static string SummaryErrorMessages(this ReadOnlyCollection<Error> errors)
         {
+            if (errors == null || errors.Count == 0)
+                return string.Empty;
+
             var sb = new StringBuilder();
 
-            foreach (var error in errors.Take(errors.Count - 1))
-                sb.AppendLine(error.Message);
-            sb.Append(errors.Last().Message);
+            for (int i = 0; i < errors.Count - 1; i++)
+                sb.AppendLine(errors[i].Message);
+            sb.Append(errors[^1].Message);
 
             return sb.ToString();
         }
