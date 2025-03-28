@@ -803,6 +803,28 @@ namespace ResultSharp.Tests.Unit.Extensions
         #region OnFailureAsync Methods
 
         [Test]
+        public async Task OnFailureAsync_WithFailureResultAndErrorHandleFunc_ShouldExecuteAction()
+        {
+            var result = Task.FromResult(Result.Failure(Error.Failure()));
+            var actionExecuted = false;
+
+            await result.OnFailureAsync(async errors => actionExecuted = errors.Any());
+
+            Assert.IsTrue(actionExecuted);
+        }
+
+        [Test]
+        public async Task OnFailureAsync_WithSuccessResultAndErrorHandleFunc_ShouldNotExecuteAction()
+        {
+            var result = Task.FromResult(Result.Success());
+            var actionExecuted = false;
+
+            await result.OnFailureAsync(async errors => actionExecuted = errors.Any());
+
+            Assert.IsFalse(actionExecuted);
+        }
+
+        [Test]
         public async Task OnFailureAsync_WithFailureResult_ShouldExecuteAction()
         {
             // Arrange
