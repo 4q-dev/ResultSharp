@@ -143,6 +143,33 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         /// <summary>
         /// Executes the specified asynchronous action if the result is a failure.
         /// </summary>
+        /// <param name="result">The task representing the result to check.</param>
+        /// <param name="action">The asynchronous action to execute if the result is a failure.</param>
+        /// <param name="configureAwait">Indicates whether to configure await.</param>
+        /// <returns>A task representing the original result of the operation.</returns>
+        public static async Task<Result> OnFailureAsync(this Task<Result> result, Func<ReadOnlyCollection<Error>, Task> action, bool configureAwait = true)
+        {
+            var r = await result.ConfigureAwait(configureAwait);
+            return await r.OnFailureAsync(action, configureAwait);
+        }
+
+        /// <summary>
+        /// Executes the specified asynchronous action if the result is a failure.
+        /// </summary>
+        /// <param name="result">The task representing the result to check.</param>
+        /// <param name="action">The asynchronous action to execute if the result is a failure.</param>
+        /// <param name="configureAwait">Indicates whether to configure await.</param>
+        /// <returns>A task representing the original result of the operation.</returns>
+        public static async Task<Result> OnFailureAsync(this Result result, Func<ReadOnlyCollection<Error>, Task> action, bool configureAwait = true)
+        {
+            if (result.IsFailure)
+                await action(result).ConfigureAwait(configureAwait);
+            return result;
+        }
+
+        /// <summary>
+        /// Executes the specified asynchronous action if the result is a failure.
+        /// </summary>
         /// <param name="result">The result to check.</param>
         /// <param name="action">The asynchronous action to execute if the result is a failure.</param>
         /// <param name="configureAwait">Indicates whether to configure await.</param>
