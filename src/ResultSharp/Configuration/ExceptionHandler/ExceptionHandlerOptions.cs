@@ -17,7 +17,7 @@ namespace ResultSharp.Configuration.ExceptionHandler
         public Func<Exception, Error> ExceptionHandler
         {
             get => exceptionHandler;
-            internal set => exceptionHandler = value ?? throw new ArgumentNullException(nameof(value));
+            set => exceptionHandler = value ?? throw new ArgumentNullException(nameof(value));
         }
     }
 }
