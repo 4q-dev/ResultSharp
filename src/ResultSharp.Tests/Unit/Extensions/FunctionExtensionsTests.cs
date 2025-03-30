@@ -54,65 +54,114 @@ namespace ResultSharp.Tests.Unit.Extensions
         #region Match Methods
 
         [Test]
-        public void Match_SuccessfulResult_CallsOnSuccess()
+        public void Match_SuccessfulResult_ReturnsResultFromOnSuccess()
         {
+            // Arrange
             var result = Result.Success();
-            bool successCalled = false, failureCalled = false;
+            var expectedResult = Result.Failure(new Error("From onSuccess", ErrorCode.NotFound));
 
-            result.Match(
-                onSuccess: () => successCalled = true,
-                onFailure: _ => failureCalled = true
+            // Act
+            var matchResult = result.Match(
+                onSuccess: () => expectedResult,
+                onFailure: _ => Result.Success()
             );
 
-            Assert.IsTrue(successCalled);
-            Assert.IsFalse(failureCalled);
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("From onSuccess", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
         }
 
         [Test]
-        public void Match_FailedResult_CallsOnFailure()
+        public void Match_FailedResult_ReturnsResultFromOnFailure()
         {
+            // Arrange
             var error = new Error("Something went wrong", ErrorCode.InternalServerError);
             var result = Result.Failure(error);
-            bool successCalled = false, failureCalled = false;
+            var expectedResult = Result.Success();
 
-            result.Match(
-                onSuccess: () => successCalled = true,
-                onFailure: _ => failureCalled = true
+            // Act
+            var matchResult = result.Match(
+                onSuccess: () => Result.Failure(new Error("Should not be called", ErrorCode.Failure)),
+                onFailure: _ => expectedResult
             );
 
-            Assert.IsFalse(successCalled);
-            Assert.IsTrue(failureCalled);
+            // Assert
+            Assert.IsTrue(matchResult.IsSuccess);
         }
 
         [Test]
-        public void Match_ResultWithValue_Success_CallsOnSuccessWithValue()
+        public void Match_ResultWithValue_Success_ReturnsResultFromOnSuccess()
         {
+            // Arrange
             var result = Result<int>.Success(42);
-            int capturedValue = 0;
+            var expectedResult = Result<string>.Success("Mapped: 42");
 
-            result.Match(
-                onSuccess: value => capturedValue = value,
-                onFailure: errors => Assert.Fail("Should not be called")
+            // Act
+            var matchResult = result.Match(
+                onSuccess: value => expectedResult,
+                onFailure: errors => Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure))
             );
 
-            Assert.AreEqual(42, capturedValue);
+            // Assert
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Mapped: 42", matchResult.Value);
         }
 
         [Test]
-        public void Match_ResultWithValue_Failure_CallsOnFailureWithErrors()
+        public void Match_ResultWithValue_Failure_ReturnsResultFromOnFailure()
         {
+            // Arrange
             var error = new Error("Invalid input", ErrorCode.Validation);
             var result = Result<int>.Failure(error);
-            ReadOnlyCollection<Error>? capturedErrors = null;
+            var expectedResult = Result<string>.Success("Error handled");
 
-            result.Match(
-                onSuccess: value => Assert.Fail("Should not be called"),
-                onFailure: errors => capturedErrors = errors
+            // Act
+            var matchResult = result.Match(
+                onSuccess: value => Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure)),
+                onFailure: errors => expectedResult
             );
 
-            Assert.IsNotNull(capturedErrors);
-            Assert.AreEqual(1, capturedErrors!.Count);
-            Assert.AreEqual("Invalid input", capturedErrors[0].Message);
+            // Assert
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Error handled", matchResult.Value);
+        }
+
+        [Test]
+        public void Match_ResultWithValue_Success_CanTransformToNonGenericResult()
+        {
+            // Arrange
+            var result = Result<int>.Success(42);
+            var expectedResult = Result.Success();
+
+            // Act
+            var matchResult = result.Match(
+                onSuccess: value => expectedResult,
+                onFailure: errors => Result.Failure(new Error("Should not be called", ErrorCode.Failure))
+            );
+
+            // Assert
+            Assert.IsTrue(matchResult.IsSuccess);
+        }
+
+        [Test]
+        public void Match_ResultWithValue_Failure_CanTransformToNonGenericResult()
+        {
+            // Arrange
+            var error = new Error("Invalid input", ErrorCode.Validation);
+            var result = Result<int>.Failure(error);
+            var expectedResult = Result.Failure(new Error("Transformed error", ErrorCode.NotFound));
+
+            // Act
+            var matchResult = result.Match(
+                onSuccess: value => Result.Success(),
+                onFailure: errors => expectedResult
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("Transformed error", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
         }
 
         #endregion
