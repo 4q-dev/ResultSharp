@@ -265,295 +265,371 @@ namespace ResultSharp.Tests.Unit.Extensions
         #region MatchAsync Methods
 
         [Test]
-        public async Task MatchAsync_WithSuccessResult_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithSuccessResult_ReturnsResultFromOnSuccess()
         {
             // Arrange
             var result = Task.FromResult(Result.Success());
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result.Failure(new Error("From onSuccess", ErrorCode.NotFound));
 
             // Act
-            await result.MatchAsync(
-                onSuccess: () => onSuccessExecuted = true,
-                onFailure: _ => onFailureExecuted = false
+            var matchResult = await result.MatchAsync(
+                onSuccess: () => expectedResult,
+                onFailure: _ => Result.Success()
             );
 
             // Assert
-            Assert.IsTrue(onSuccessExecuted);
-            Assert.IsFalse(onFailureExecuted);
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("From onSuccess", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
         }
 
         [Test]
-        public async Task MatchAsync_WithFailureResult_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithFailureResult_ReturnsResultFromOnFailure()
         {
             // Arrange
             var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result.Success();
 
             // Act
-            await result.MatchAsync(
-                onSuccess: () => onSuccessExecuted = false,
-                onFailure: _ => onFailureExecuted = true
+            var matchResult = await result.MatchAsync(
+                onSuccess: () => Result.Failure(new Error("Should not be called", ErrorCode.Failure)),
+                onFailure: _ => expectedResult
             );
 
             // Assert
-            Assert.IsFalse(onSuccessExecuted);
-            Assert.IsTrue(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
         }
 
         [Test]
-        public async Task MatchAsync_WithSuccessResultAndAsyncActions_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithSuccessResultAndAsyncFunctions_ReturnsResultFromOnSuccess()
         {
             // Arrange
             var result = Task.FromResult(Result.Success());
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result.Failure(new Error("From async onSuccess", ErrorCode.NotFound));
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async () =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = true;
+                    return expectedResult;
                 },
                 onFailure: async _ =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = false;
+                    return Result.Success();
                 }
             );
 
             // Assert
-            Assert.IsTrue(onSuccessExecuted);
-            Assert.IsFalse(onFailureExecuted);
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("From async onSuccess", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
         }
 
         [Test]
-        public async Task MatchAsync_WithFailureResultAndAsyncActions_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithFailureResultAndAsyncFunctions_ReturnsResultFromOnFailure()
         {
             // Arrange
             var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result.Success();
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async () =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = false;
+                    return Result.Failure(new Error("Should not be called", ErrorCode.Failure));
                 },
                 onFailure: async _ =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = true;
+                    return expectedResult;
                 }
             );
 
             // Assert
-            Assert.IsFalse(onSuccessExecuted);
-            Assert.IsTrue(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
         }
 
         [Test]
-        public async Task MatchAsync_WithSuccessResultDirect_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithSuccessResultDirect_ReturnsResultFromOnSuccess()
         {
             // Arrange
             var result = Result.Success();
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result.Failure(new Error("From async onSuccess direct", ErrorCode.NotFound));
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async () =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = true;
+                    return expectedResult;
                 },
                 onFailure: async _ =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = false;
+                    return Result.Success();
                 }
             );
 
             // Assert
-            Assert.IsTrue(onSuccessExecuted);
-            Assert.IsFalse(onFailureExecuted);
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("From async onSuccess direct", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
         }
 
         [Test]
-        public async Task MatchAsync_WithFailureResultDirect_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithFailureResultDirect_ReturnsResultFromOnFailure()
         {
             // Arrange
             var result = Result.Failure(Error.Failure("Test error"));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result.Success();
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async () =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = false;
+                    return Result.Failure(new Error("Should not be called", ErrorCode.Failure));
                 },
                 onFailure: async _ =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = true;
+                    return expectedResult;
                 }
             );
 
             // Assert
-            Assert.IsFalse(onSuccessExecuted);
-            Assert.IsTrue(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericSuccessResult_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithGenericSuccessResult_ReturnsResultFromOnSuccess()
         {
             // Arrange
             var result = Task.FromResult(Result<int>.Success(10));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result<string>.Success("Value was: 10");
 
             // Act
-            await result.MatchAsync(
-                onSuccess: value => onSuccessExecuted = value == 10,
-                onFailure: errors => onFailureExecuted = false
+            var matchResult = await result.MatchAsync(
+                onSuccess: value => expectedResult,
+                onFailure: errors => Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure))
             );
 
             // Assert
-            Assert.IsTrue(onSuccessExecuted);
-            Assert.IsFalse(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Value was: 10", matchResult.Value);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericFailureResult_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithGenericFailureResult_ReturnsResultFromOnFailure()
         {
             // Arrange
             var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result<string>.Success("Error handled");
 
             // Act
-            await result.MatchAsync(
-                onSuccess: value => onSuccessExecuted = false,
-                onFailure: errors => onFailureExecuted = true
+            var matchResult = await result.MatchAsync(
+                onSuccess: value => Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure)),
+                onFailure: errors => expectedResult
             );
 
             // Assert
-            Assert.IsFalse(onSuccessExecuted);
-            Assert.IsTrue(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Error handled", matchResult.Value);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericSuccessResultAndAsyncActions_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithGenericSuccessResultAndAsyncFunctions_ReturnsResultFromOnSuccess()
         {
             // Arrange
             var result = Task.FromResult(Result<int>.Success(10));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result<string>.Success("Async value was: 10");
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async value =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = value == 10;
+                    return expectedResult;
                 },
                 onFailure: async errors =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = false;
+                    return Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure));
                 }
             );
 
             // Assert
-            Assert.IsTrue(onSuccessExecuted);
-            Assert.IsFalse(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Async value was: 10", matchResult.Value);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericFailureResultAndAsyncActions_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithGenericFailureResultAndAsyncFunctions_ReturnsResultFromOnFailure()
         {
             // Arrange
             var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result<string>.Success("Async error handled");
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async value =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = false;
+                    return Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure));
                 },
                 onFailure: async errors =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = true;
+                    return expectedResult;
                 }
             );
 
             // Assert
-            Assert.IsFalse(onSuccessExecuted);
-            Assert.IsTrue(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Async error handled", matchResult.Value);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericSuccessResultDirect_ShouldExecuteOnSuccessAction()
+        public async Task MatchAsync_WithGenericSuccessResultDirect_ReturnsResultFromOnSuccess()
         {
             // Arrange
             var result = Result<int>.Success(10);
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result<string>.Success("Direct async value was: 10");
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async value =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = value == 10;
+                    return expectedResult;
                 },
                 onFailure: async errors =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = false;
+                    return Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure));
                 }
             );
 
             // Assert
-            Assert.IsTrue(onSuccessExecuted);
-            Assert.IsFalse(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Direct async value was: 10", matchResult.Value);
         }
 
         [Test]
-        public async Task MatchAsync_WithGenericFailureResultDirect_ShouldExecuteOnFailureAction()
+        public async Task MatchAsync_WithGenericFailureResultDirect_ReturnsResultFromOnFailure()
         {
             // Arrange
             var result = Result<int>.Failure(Error.Failure("Test error"));
-            var onSuccessExecuted = false;
-            var onFailureExecuted = false;
+            var expectedResult = Result<string>.Success("Direct async error handled");
 
             // Act
-            await result.MatchAsync(
+            var matchResult = await result.MatchAsync(
                 onSuccess: async value =>
                 {
                     await Task.Delay(10);
-                    onSuccessExecuted = false;
+                    return Result<string>.Failure(new Error("Should not be called", ErrorCode.Failure));
                 },
                 onFailure: async errors =>
                 {
                     await Task.Delay(10);
-                    onFailureExecuted = true;
+                    return expectedResult;
                 }
             );
 
             // Assert
-            Assert.IsFalse(onSuccessExecuted);
-            Assert.IsTrue(onFailureExecuted);
+            Assert.IsTrue(matchResult.IsSuccess);
+            Assert.AreEqual("Direct async error handled", matchResult.Value);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericSuccessResult_CanTransformToNonGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var expectedResult = Result.Success();
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: value => expectedResult,
+                onFailure: errors => Result.Failure(new Error("Should not be called", ErrorCode.Failure))
+            );
+
+            // Assert
+            Assert.IsTrue(matchResult.IsSuccess);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericFailureResult_CanTransformToNonGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var expectedResult = Result.Failure(new Error("Transformed error", ErrorCode.NotFound));
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: value => Result.Success(),
+                onFailure: errors => expectedResult
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("Transformed error", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericSuccessResultAndAsyncFunctions_CanTransformToNonGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Success(10));
+            var expectedResult = Result.Success();
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: async value =>
+                {
+                    await Task.Delay(10);
+                    return expectedResult;
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    return Result.Failure(new Error("Should not be called", ErrorCode.Failure));
+                }
+            );
+
+            // Assert
+            Assert.IsTrue(matchResult.IsSuccess);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithGenericFailureResultAndAsyncFunctions_CanTransformToNonGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result<int>.Failure(Error.Failure("Test error")));
+            var expectedResult = Result.Failure(new Error("Async transformed error", ErrorCode.NotFound));
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: async value =>
+                {
+                    await Task.Delay(10);
+                    return Result.Success();
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    return expectedResult;
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("Async transformed error", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
         }
 
         #endregion
