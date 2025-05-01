@@ -1,7 +1,11 @@
 ﻿using NUnit.Framework;
 using ResultSharp.Core;
 using ResultSharp.Errors;
+using ResultSharp.Errors.Enums;
+using ResultSharp.Extensions.CollectionExtensions;
+using ResultSharp.Extensions.FunctionalExtensions.Async;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
+using ResultSharp.Logging;
 
 namespace ResultSharp.Tests.Integration
 {
@@ -55,19 +59,20 @@ namespace ResultSharp.Tests.Integration
                 .Match(
                     ok =>
                     {
-                        Console.WriteLine($"Success: {ok}");
-                        return Result.Success(ok);
+                        Console.WriteLine($"Number is {ok}");
+                        return Result.Success(ok + 10);
                     },
-                    error =>
+                    errs =>
                     {
-                        Console.WriteLine($"Error: {error}");
-                        return Result<int>.Failure();
+                        Console.WriteLine($"Errors: {errs.SummaryErrorMessages()}");
+                        return Error.Failure("Some failure message");
                     }
                 )
+                //.LogIfSuccess("Log value: {val}") // output: Log value: 94
                 .UnwrapOrDefault(@default: 0);
 
-            Console.WriteLine(result); // 84
-            Assert.That(result, Is.EqualTo(84));
+            Console.WriteLine(result); // 94
+            Assert.That(result, Is.EqualTo(94));
         }
 
         private Result<int> ParseNumber(string input)
@@ -75,6 +80,42 @@ namespace ResultSharp.Tests.Integration
             return int.TryParse(input, out var number)
                 ? number
                 : Error.Failure("Invalid number");
+        }
+
+        [Test]
+        public async Task MatchDocumentationCase()
+        {
+            Task<Result<string>> result = Task.FromResult(Result.Success(""));
+            Result result2 = Result.Success();
+
+            var matchResult = await result.MatchAsync(
+                val => {
+                    if (val == "Привет от LightChimera!")
+                        return "удачи поклинкодить!";
+                    return val;
+                },
+                errs => Result<string>.Failure(),
+                configureAwait: false
+            );
+
+            var matchResult2 = result2.Match(
+                onSuccess: () => {
+                    // some operations here
+                    return Result.Success(10);
+                },
+                onFailure: errors => {
+                    // the logic of handling some errors is as follows
+                    if (errors.First().ErrorCode == ErrorCode.NotFound)
+                        return Result.Success(-1);
+
+                    return Result<int>.Failure();
+                }
+            );
+
+            var matchResult3 = result.MatchAsync(
+                ok => Result.Success(),
+                err => Result.Failure()
+            );
         }
     }
 
