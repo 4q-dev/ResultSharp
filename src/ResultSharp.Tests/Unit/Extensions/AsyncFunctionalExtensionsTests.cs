@@ -3,6 +3,7 @@ using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Errors.Enums;
 using ResultSharp.Extensions.FunctionalExtensions.Async;
+using System.Threading;
 
 namespace ResultSharp.Tests.Unit.Extensions
 {
@@ -630,6 +631,158 @@ namespace ResultSharp.Tests.Unit.Extensions
             Assert.IsFalse(matchResult.IsSuccess);
             Assert.AreEqual("Async transformed error", matchResult.Errors.First().Message);
             Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithFailureTaskResultAndAsyncFunctions_CanTransformToGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
+            var expectedResult = Result<int>.Failure(new Error("Async transformed error", ErrorCode.NotFound));
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: async () =>
+                {
+                    await Task.Delay(10);
+                    return Result.Success(3);
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    return expectedResult;
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("Async transformed error", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithSuccessTaskResultAndAsyncFunctions_CanTransformToGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Success());
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: async () =>
+                {
+                    await Task.Delay(10);
+                    return 4;
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    return Result<int>.Failure();
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsFailure);
+            Assert.AreEqual(4, matchResult.Value);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithFailureTaskResult_CanTransformToGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Failure(Error.Failure("Test error")));
+            var expectedResult = Result<int>.Failure(new Error("Async transformed error", ErrorCode.NotFound));
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: () =>
+                {
+                    return Result.Success(3);
+                },
+                onFailure: errors =>
+                {
+                    return expectedResult;
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("Async transformed error", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithSuccessTaskResult_CanTransformToGenericResult()
+        {
+            // Arrange
+            var result = Task.FromResult(Result.Success());
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: () =>
+                {
+                    return 4;
+                },
+                onFailure: errors =>
+                {
+                    return Result<int>.Failure();
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsFailure);
+            Assert.AreEqual(4, matchResult.Value);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithFailureResultAndAsyncFunctions_CanTransformToGenericResult()
+        {
+            // Arrange
+            var result = Result.Failure(Error.Failure("Test error"));
+            var expectedResult = Result<int>.Failure(new Error("Async transformed error", ErrorCode.NotFound));
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: async () =>
+                {
+                    await Task.Delay(10);
+                    return Result.Success(3);
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    return expectedResult;
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsSuccess);
+            Assert.AreEqual("Async transformed error", matchResult.Errors.First().Message);
+            Assert.AreEqual(ErrorCode.NotFound, matchResult.Errors.First().ErrorCode);
+        }
+
+        [Test]
+        public async Task MatchAsync_WithSuccessResultAndAsyncFunctions_CanTransformToGenericResult()
+        {
+            // Arrange
+            var result = Result.Success();
+
+            // Act
+            var matchResult = await result.MatchAsync(
+                onSuccess: async () =>
+                {
+                    await Task.Delay(10);
+                    return 4;
+                },
+                onFailure: async errors =>
+                {
+                    await Task.Delay(10);
+                    return Result<int>.Failure();
+                }
+            );
+
+            // Assert
+            Assert.IsFalse(matchResult.IsFailure);
+            Assert.AreEqual(4, matchResult.Value);
         }
 
         #endregion

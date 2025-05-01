@@ -7,45 +7,62 @@ description: Выполнение заданных действий в зави�
 
 `Match` — это метод, который позволяет выполнить разные действия в зависимости от успешности результата. Если операция завершилась успешно, вызывается одно действие, если произошла ошибка — другое.
 
-## Когда использовать
+> [!TIP]
+> Используйте `Match` вместо проверки `IsSuccess` с последующим `if-else`-оператором.
 
-- Когда нужно обработать успешный и неудачный результат без явных проверок `IsSuccess`.
-- Для удобного выполнения побочных эффектов, например, логирования или отображения уведомлений.
-- При написании чистого и читаемого кода без вложенных `if`-проверок.
+## Синхронные варианты
 
----
-
-## Пример использования
-
-### Синхронный вариант
+> [!NOTE] 
+> Синхроные и асихнронные варианты методов расширения работают как для `Result`, так и для `Result<T>`.
 
 ```csharp
-Result<int> result = SomeOperation();
+Result result = SomeOperation();
 
-result.Match(
-    onSuccess: value => Console.WriteLine($"Успешный результат: {value}"),
-    onFailure: errors => Console.WriteLine($"Ошибка: {string.Join(", ", errors)}")
+var matchResult = result.Match(
+    onSuccess: () => {
+        // Выполняем необходимые операции
+        return Result.Success(10);
+    },
+    onFailure: errors => {
+        // Логика обработки ошибок
+        if (errors.First().ErrorCode == ErrorCode.NotFound)
+            return Result.Success(-1);
+
+        return Result<int>.Failure();
+    }
 );
 ```
 
-### Асинхронный вариант
+## Асинхронные варианты
+
+> [!NOTE]
+> Делегат `onSuccess` в методе расширения для `Result<T>` принимает на вход значение `T` успешного результата.
 
 ```csharp
-async Task ProcessResultAsync()
-{
-    var result = await SomeAsyncOperation();
+Task<Result<string>> result = GetSomeStringResultAsync();
 
-    await result.MatchAsync(
-        onSuccess: async value =>
-        {
-            Console.WriteLine($"Успешный результат: {value}");
-            await Task.Delay(100); // Имитация асинхронной обработки
-        },
-        onFailure: async errors =>
-        {
-            Console.WriteLine($"Ошибка: {string.Join(", ", errors)}");
-            await Task.Delay(100); // Имитация асинхронной обработки ошибки
-        }
-    );
-}
+var matchResult = await result.MatchAsync(
+    val => {
+        if (val == "Привет от LightChimera!")
+            return "удачи поклинкодить!";
+        return val;
+    },
+    errs => Result<string>.Failure(),
+    configureAwait: false
+);
 ```
+
+> [!NOTE]
+> Делегатам не обязательно возвращать дженерик-результат.
+
+```csharp
+Task<Result<string>> result = GetSomeStringResultAsync();
+
+var matchResult = result.MatchAsync(
+    ok => Result.Success(),
+    err => Result.Failure()
+);
+```
+
+> [!NOTE]
+> При помощи параметра `configureAwait` можно управлять асинхронным контекстом, что особенно важно в UI-приложениях с главным управляющим потоком.

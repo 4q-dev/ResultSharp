@@ -50,8 +50,58 @@ namespace ResultSharp.Extensions.FunctionalExtensions.Async
         {
             if (result.IsSuccess)
                 return await onSuccess().ConfigureAwait(configureAwait);
-            else
-                return await onFailure(result).ConfigureAwait(configureAwait);
+
+            return await onFailure(result).ConfigureAwait(configureAwait);
+        }
+
+        /// <summary>
+        /// Asynchronously matches a <see cref="Result"/> and executes different actions based on success or failure,
+        /// transforming the result to a new type.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the new <see cref="Result{TNew}"/></typeparam>
+        /// <param name="result">The <see cref="Task"/> of <see cref="Result"/> to match against</param>
+        /// <param name="onSuccess">Action to execute when the result is successful</param>
+        /// <param name="onFailure">Action to execute when the result has failed</param>
+        /// <param name="configureAwait">Whether to configure the await context</param>
+        /// <returns>A <see cref="Task"/> containing a new <see cref="Result{TNew}"/> based on the executed action</returns>
+        public static async Task<Result<TNew>> MatchAsync<TNew>(this Task<Result> result, Func<Result<TNew>> onSuccess, Func<ReadOnlyCollection<Error>, Result<TNew>> onFailure, bool configureAwait = true)
+        {
+            var r = await result.ConfigureAwait(configureAwait);
+            return r.Match(onSuccess, onFailure);
+        }
+
+        /// <summary>
+        /// Asynchronously matches a <see cref="Result"/> and executes different asynchronous actions based on success or failure,
+        /// transforming the result to a new type.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the new <see cref="Result{TNew}"/></typeparam>
+        /// <param name="result">The <see cref="Task"/> of <see cref="Result"/> to match against</param>
+        /// <param name="onSuccess">Asynchronous action to execute when the result is successful</param>
+        /// <param name="onFailure">Asynchronous action to execute when the result has failed</param>
+        /// <param name="configureAwait">Whether to configure the await context</param>
+        /// <returns>A <see cref="Task"/> containing a new <see cref="Result{TNew}"/> based on the executed action</returns>
+        public static async Task<Result<TNew>> MatchAsync<TNew>(this Task<Result> result, Func<Task<Result<TNew>>> onSuccess, Func<ReadOnlyCollection<Error>, Task<Result<TNew>>> onFailure, bool configureAwait = true)
+        {
+            var r = await result.ConfigureAwait(configureAwait);
+            return await r.MatchAsync(onSuccess, onFailure, configureAwait);
+        }
+
+        /// <summary>
+        /// Asynchronously matches a <see cref="Result"/> and executes different asynchronous actions based on success or failure,
+        /// transforming the result to a new type.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the new <see cref="Result{TNew}"/></typeparam>
+        /// <param name="result">The <see cref="Result"/> to match against</param>
+        /// <param name="onSuccess">Asynchronous action to execute when the result is successful</param>
+        /// <param name="onFailure">Asynchronous action to execute when the result has failed</param>
+        /// <param name="configureAwait">Whether to configure the await context</param>
+        /// <returns>A <see cref="Task"/> containing a new <see cref="Result{TNew}"/> based on the executed action</returns>
+        public static async Task<Result<TNew>> MatchAsync<TNew>(this Result result, Func<Task<Result<TNew>>> onSuccess, Func<ReadOnlyCollection<Error>, Task<Result<TNew>>> onFailure, bool configureAwait = true)
+        {
+            if (result.IsSuccess)
+                return await onSuccess().ConfigureAwait(configureAwait);
+
+            return await onFailure(result).ConfigureAwait(configureAwait);
         }
 
         /// <summary>

@@ -73,12 +73,21 @@ Result<int> ParseNumber(string input)
 int result = ParseNumber("42")
     .Map(n => n * 2)
     .Match(
-        ok => Console.Write($"Success: {ok}"), // output: Success: 84
-        error => Console.Write($"Error: {error}")
+        ok =>
+        {
+            Console.WriteLine($"Number is {ok}");
+            return Result.Success(ok + 10);
+        },
+        errs =>
+        {
+            Console.WriteLine($"Errors: {errs.SummaryErrorMessages()}");
+            return Error.Failure("Some failure message");
+        }
     )
+    .LogIfSuccess("Log value: {val}") // output: Log value: 94
     .UnwrapOrDefault(@default: 0);
 
-Console.WriteLine(result); // 84
+Console.WriteLine(result); // 94
 ```
 
 ## Пример использования
@@ -116,7 +125,7 @@ catch (Exception ex)
 return userRepository.Get()
     .Ensure(user => user.Email.IsConfirmed, onFailure: Error.Unauthorized("Email address must be confirmed before sending notifications."))
     .Then(user => emailNotificationService.Notify(user.Email, "some notification message"))
-    .LogIfFailure();
+    .LogErrorMessages();
 ```
 
 ## Контрибуция

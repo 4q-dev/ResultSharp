@@ -4,77 +4,82 @@ using System.Collections.ObjectModel;
 
 namespace ResultSharp.Extensions.FunctionalExtensions.Sync
 {
-    /// <summary>  
-    /// Provides extension methods for matching results and executing actions based on success or failure.  
-    /// </summary>  
+    /// <summary>
+    /// Provides extension methods for pattern matching on <see cref="Result"/> types.
+    /// These methods allow for handling both success and failure cases in a functional way,
+    /// executing different actions based on the result state.
+    /// </summary>
     public static class MatchExtensions
     {
         /// <summary>
-        /// Executes the appropriate function based on the result's state and returns a new Result.
+        /// Matches a <see cref="Result"/> and executes different actions based on success or failure.
         /// </summary>
-        /// <param name="result">The result to match against.</param>
-        /// <param name="onSuccess">Function to execute when the result is successful.</param>
-        /// <param name="onFailure">Function to execute when the result is a failure, providing access to the error collection.</param>
-        /// <returns>A new <see cref="Result"/> instance returned by either the onSuccess or onFailure function.</returns>
+        /// <param name="result">The <see cref="Result"/> to match against</param>
+        /// <param name="onSuccess">Action to execute when the result is successful</param>
+        /// <param name="onFailure">Action to execute when the result has failed</param>
+        /// <returns>A new <see cref="Result"/> based on the executed action</returns>
         public static Result Match(this Result result, Func<Result> onSuccess, Func<ReadOnlyCollection<Error>, Result> onFailure)
         {
-            switch (result.IsSuccess)
+            return result.IsSuccess switch
             {
-                case true: return onSuccess();
-                case false: return onFailure(result);
-            }
+                true => onSuccess(),
+                false => onFailure(result)
+            };
         }
 
         /// <summary>
-        /// Executes the appropriate function based on the result's state and returns a new Result with a different type.
+        /// Matches a <see cref="Result"/> of one type and executes different actions based on success or failure,
+        /// transforming the result to a non-generic <see cref="Result"/>.
         /// </summary>
-        /// <typeparam name="TNew">The type of the value in the new Result.</typeparam>
-        /// <param name="result">The result to match against.</param>
-        /// <param name="onSuccess">Function to execute when the result is successful.</param>
-        /// <param name="onFailure">Function to execute when the result is a failure, providing access to the error collection.</param>
-        /// <returns>A new <see cref="Result{TNew}"/> instance returned by either the onSuccess or onFailure function.</returns>
+        /// <typeparam name="TOld">The type of the original <see cref="Result{TOld}"/></typeparam>
+        /// <param name="result">The <see cref="Result{TOld}"/> to match against</param>
+        /// <param name="onSuccess">Action to execute when the result is successful</param>
+        /// <param name="onFailure">Action to execute when the result has failed</param>
+        /// <returns>A new non-generic <see cref="Result"/> based on the executed action</returns>
+        public static Result Match<TOld>(this Result<TOld> result, Func<TOld, Result> onSuccess, Func<ReadOnlyCollection<Error>, Result> onFailure)
+        {
+            return result.IsSuccess switch
+            {
+                true => onSuccess(result),
+                false => onFailure(result)
+            };
+        }
+
+        /// <summary>
+        /// Matches a <see cref="Result"/> and executes different actions based on success or failure,
+        /// transforming the result to a new type.
+        /// </summary>
+        /// <typeparam name="TNew">The type of the new <see cref="Result{TNew}"/></typeparam>
+        /// <param name="result">The <see cref="Result"/> to match against</param>
+        /// <param name="onSuccess">Action to execute when the result is successful</param>
+        /// <param name="onFailure">Action to execute when the result has failed</param>
+        /// <returns>A new <see cref="Result{TNew}"/> based on the executed action</returns>
         public static Result<TNew> Match<TNew>(this Result result, Func<Result<TNew>> onSuccess, Func<ReadOnlyCollection<Error>, Result<TNew>> onFailure)
         {
-            switch (result.IsSuccess)
+            return result.IsSuccess switch
             {
-                case true: return onSuccess();
-                case false: return onFailure(result);
-            }
+                true => onSuccess(),
+                false => onFailure(result)
+            };
         }
 
         /// <summary>
-        /// Executes the appropriate function based on the result's state and returns a new Result with a different type.
+        /// Matches a <see cref="Result{TOld}"/> and executes different actions based on success or failure,
+        /// transforming the result to a new type.
         /// </summary>
-        /// <typeparam name="TResult">The type of the value in the original Result.</typeparam>
-        /// <typeparam name="TNew">The type of the value in the new Result.</typeparam>
-        /// <param name="result">The result to match against.</param>
-        /// <param name="onSuccess">Function to execute when the result is successful, providing access to the result value.</param>
-        /// <param name="onFailure">Function to execute when the result is a failure, providing access to the error collection.</param>
-        /// <returns>A new <see cref="Result{TNew}"/> instance returned by either the onSuccess or onFailure function.</returns>
-        public static Result<TNew> Match<TResult, TNew>(this Result<TResult> result, Func<TResult, Result<TNew>> onSuccess, Func<ReadOnlyCollection<Error>, Result<TNew>> onFailure)
+        /// <typeparam name="TOld">The type of the original <see cref="Result{TOld}"/></typeparam>
+        /// <typeparam name="TNew">The type of the new <see cref="Result{TNew}"/></typeparam>
+        /// <param name="result">The <see cref="Result{TOld}"/> to match against</param>
+        /// <param name="onSuccess">Action to execute when the result is successful</param>
+        /// <param name="onFailure">Action to execute when the result has failed</param>
+        /// <returns>A new <see cref="Result{TNew}"/> based on the executed action</returns>
+        public static Result<TNew> Match<TOld, TNew>(this Result<TOld> result, Func<TOld, Result<TNew>> onSuccess, Func<ReadOnlyCollection<Error>, Result<TNew>> onFailure)
         {
-            switch (result.IsSuccess)
+            return result.IsSuccess switch
             {
-                case true: return onSuccess(result);
-                case false: return onFailure(result);
-            }
-        }
-
-        /// <summary>
-        /// Executes the appropriate function based on the result's state and transforms a typed Result to a non-typed Result.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the value in the original Result.</typeparam>
-        /// <param name="result">The result to match against.</param>
-        /// <param name="onSuccess">Function to execute when the result is successful, providing access to the result value.</param>
-        /// <param name="onFailure">Function to execute when the result is a failure, providing access to the error collection.</param>
-        /// <returns>A new <see cref="Result"/> instance returned by either the onSuccess or onFailure function.</returns>
-        public static Result Match<TResult>(this Result<TResult> result, Func<TResult, Result> onSuccess, Func<ReadOnlyCollection<Error>, Result> onFailure)
-        {
-            switch (result.IsSuccess)
-            {
-                case true: return onSuccess(result);
-                case false: return onFailure(result);
-            }
+                true => onSuccess(result),
+                false => onFailure(result)
+            };
         }
     }
 }
